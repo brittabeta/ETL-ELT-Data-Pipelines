@@ -1,0 +1,184 @@
+Apache Airflow 1: Overview 
+
+Exercise 1 - Start Apache Airflow
+# New Terminal
+# Start Apache Airflow.
+start_airflow
+# output
+Airflow started, waiting for all services to be ready....      
+Your airflow server is now ready to use and available with username: airflow password: MTUzNjAtYnJldGFu
+You can access your Airflow Webserver at: https://bretana1226-8080.theiadocker-3-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+CommandLine: 
+• List DAGs: airflow dags list
+• List Tasks: airflow tasks list example_bash_operator
+• Run an example task: airflow tasks test example_bash_operator runme_1 2015-06-01
+Exercise 2 - Open the Airflow Web UI
+# browser copy paste URL or ctrl + click
+# https://bretana1226-8080.theiadocker-3-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+# landing page
+# Toggle (unpause/pause a DAG)
+# Tree View (see tree view of the DAG) – NOW Grid View
+# Graph View (see graph view of the DAG)
+Exercise 3 - List all DAGs
+# Command line options
+# List all existing DAGs
+airflow dags list
+Exercise 4 - List tasks in a DAG
+#  list out all the tasks in the DAG named: example_bash_operator.
+airflow tasks list example_bash_operator
+also_run_this
+run_after_loop
+run_this_last
+runme_0
+runme_1
+runme_2
+this_will_skip
+# List tasks for the named: tutorial
+airflow tasks list tutorial
+print_date
+sleep
+templated
+# List tasks for the DAG example_branch_labels.
+airflow tasks list example_branch_labels
+analyze
+check_integrity
+describe_integrity
+email_error
+ingest
+report
+save
+Exercise 5 - Pause/Unpause a DAG
+#  unpause a tutorial DAG
+airflow dags unpause tutorial
+Dag: tutorial, paused: False
+# Pause tutorial DAG.
+airflow dags pause tutorial
+Dag: tutorial, paused: True
+# unpause the DAG named: example_branch_operator
+airflow dags unpause example_branch_operator
+Dag: example_branch_operator, paused: False
+# unpause the DAG example_branch_labels
+airflow dags unpause example_branch_labels
+Dag: example_branch_labels, paused: False
+# Pause the DAG example_branch_labels.
+airflow dags pause example_branch_labels
+Dag: example_branch_labels, paused: True
+
+Apache Airflow 2: Create a DAG
+# new terminal, command line: start Apache Airflow in the IDE
+start_airflow
+Airflow started, waiting for all services to be ready....
+Your airflow server is now ready to use and available with username: airflow password: MTUzNjAtYnJldGFu
+You can access your Airflow Webserver at: https://bretana1226-8080.theiadocker-3-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+CommandLine: 
+ • List DAGs: airflow dags list
+ • List Tasks: airflow tasks list example_bash_operator
+ • Run an example task: airflow tasks test example_bash_operator runme_1 2015-06-01
+# Open Airflow Web UI: copy paste URL in browser or ctrl + click
+https://bretana1226-8080.theiadocker-3-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+
+# Brittas_first_dag.py
+# import the libraries
+from datetime import timedelta
+# The DAG object; need this to instantiate a DAG
+from airflow import DAG
+# Operators; to write tasks
+from airflow.operators.bash_operator import BashOperator
+# makes scheduling easy
+from airflow.utils.dates import days_ago
+#defining DAG arguments, can override them on a per-task basis during operator initialization
+default_args = {
+    'owner': 'Britta Smith',
+    'start_date': days_ago(0),
+    'email': ['bretana1226@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+# defining the DAG
+dag = DAG(
+    'Brittas-first-dag',
+    default_args=default_args,
+    description='My first DAG',
+    schedule_interval=timedelta(days=1),
+)
+# define the tasks
+# first task
+extract = BashOperator(
+    task_id='extract',
+    bash_command='cut -d":" -f1,3,6 /etc/passwd > /home/project/airflow/dags/extracted-data.txt',
+    dag=dag,
+)
+# second task
+transform_and_load = BashOperator(
+    task_id='transform and load',
+    bash_command='tr ":" "," < /home/project/airflow/dags/extracted-data.txt > /home/project/airflow/dags/transformed-data.csv',
+    dag=dag,
+)
+# task pipeline
+extract >> transform_and_load
+
+# ETL_Server_Access_Log_Processing.py
+# imports block
+from datetime import timedelta
+from airflow import DAG
+from airflow.operators.bash_operator import BashOperator
+from airflow.utils.dates import days_ago
+
+# DAG arguments block
+default_args = {
+    'owner': 'Britta Smith',
+    'start_date': days_ago(0),
+    'email': ['bretana1226@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+# DAG definition block
+dag = DAG(
+    'ETL_Server_Access_Log_Processing',
+    default_args=default_args,
+    description='ETL server access log DAG',
+    schedule_interval=timedelta(days=1),
+)
+
+# create download task for https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Apache%20Airflow/Build%20a%20DAG%20using%20Airflow/web-server-access-log.txt
+
+# download task
+download = BashOperator(
+    task_id='download',
+    bash_command='wget "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Apache%20Airflow/Build%20a%20DAG%20using%20Airflow/web-server-access-log.txt"',
+    dag=dag,
+)
+
+# create the extract task: extract fields timestamp and visitorid which are fields 1 and 4
+extract = BashOperator(
+    task_id='extract',
+    bash_command='cut -f1,4 -d”#” web-server-access-log.txt  > /home/project/airflow/dags/extracted-data.txt',
+    dag=dag,
+)
+
+# create the transform task: transformation is to capitalize the visitorid
+transform = BashOperator(
+    task_id='transform',
+    bash_command= 'tr "[a-z]" "[A-Z]" < /home/project/airflow/dags/extracted.txt > /home/project/airflow/dags/capitalized.txt',
+    dag=dag,
+)
+
+# create load task: compress the extracted and transformed data
+load = BashOperator(
+    task_id='load',
+    bash_command='zip log.zip capitalized.txt' ,
+    dag=dag,
+)
+
+# create task pipeline block
+download >> extract >> transform >> load
+
+# submit the DAG
+cp  ETL_Server_Access_Log_Processing.py $AIRFLOW_HOME/dags
+# verify
+airflow dags list
