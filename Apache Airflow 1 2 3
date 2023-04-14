@@ -182,3 +182,93 @@ download >> extract >> transform >> load
 cp  ETL_Server_Access_Log_Processing.py $AIRFLOW_HOME/dags
 # verify
 airflow dags list
+
+Montoring a DAG
+
+# Getting the environment ready
+# new terminal, command
+start_airflow
+Airflow started, waiting for all services to be ready....     
+Your airflow server is now ready to use and available with username: airflow password: NzA5MC1icmV0YW5h
+You can access your Airflow Webserver at: https://bretana1226-8080.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+CommandLine: 
+ • List DAGs: airflow dags list
+ • List Tasks: airflow tasks list example_bash_operator
+ • Run an example task: airflow tasks test example_bash_operator runme_1 2015-06-01
+# Open Airflow Web UI
+https://bretana1226-8080.theiadocker-2-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+
+# Submit a dummy DAG: Dummy DAG for Monitoring
+## monitor: task1 (does nothing but sleep for 1 second), task2 (sleeps for 2 seconds), task3 (sleeps for 3 seconds), DAG scheduled to run every 1 minutes
+
+# new file: dummy_dag.py
+
+# import the libraries
+
+from datetime import timedelta
+# The DAG object; we'll need this to instantiate a DAG
+from airflow import DAG
+# Operators; we need this to write tasks!
+from airflow.operators.bash_operator import BashOperator
+# This makes scheduling easy
+from airflow.utils.dates import days_ago
+
+#defining DAG arguments
+
+# You can override them on a per-task basis during operator initialization
+default_args = {
+    'owner': 'Britta Smith',
+    'start_date': days_ago(0),
+    'email': ['bretana1226@gmail.com'],
+    'email_on_failure': False,
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+# defining the DAG
+dag = DAG(
+    'dummy_dag',
+    default_args=default_args,
+    description='My first monitoring DAG',
+    schedule_interval=timedelta(minutes=1),
+)
+
+# define the tasks
+
+# define the first task
+
+task1 = BashOperator(
+    task_id='task1',
+    bash_command='sleep 1',
+    dag=dag,
+)
+
+# define the second task
+task2 = BashOperator(
+    task_id='task2',
+    bash_command='sleep 2',
+    dag=dag,
+)
+
+# define the third task
+task3 = BashOperator(
+    task_id='task3',
+    bash_command='sleep 3',
+    dag=dag,
+)
+
+# task pipeline
+task1 >> task2 >> task3
+
+# Submit the DAG: copying the DAG python file into dags folder in the AIRFLOW_HOME directory
+cp dummy_dag.py $AIRFLOW_HOME/dags
+# verify that dummy_dag is listed in dags, it actually was submitted
+airflow dags list
+dummy_dag | dummy_dag.py | Britta Smith | None
+# list the tasks in dummy_dag
+airflow tasks list dummy_dag
+task1
+task2
+task3
+
