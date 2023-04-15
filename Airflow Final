@@ -1,0 +1,64 @@
+From airflow import DAG # import the DAG module from the Airflow collection
+From airflow.operators.bash_operator import BashOperator
+Import datetime as dt
+
+
+# DAG arguments
+Default_args = {
+    'Owner': 'Britta Smith',
+    'Start_date': days_ago(0), # today
+    'email': ['bretana1226@gmail.com'],
+    'email_on_failure': True,
+    'email_on_retry': True,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+
+# DAG definition (instantiation)
+dag = DAG ('ETL_toll_data',
+description='Apache Airflow Final Assignment',
+default_args=default_args,
+schedule_interval=timedelta(days=1), # every day
+)
+
+
+# Task definitions
+task1 = BashOperator(
+    task_id='unzip_data',
+    bash_command='tar -xzf /home/project/tolldata.tgz > /home/project/airflow/dags/finalassignment.txt',
+    dag=dag,
+)
+
+task2 = BashOperator(
+    task_id='extract_data_from_csv',
+    bash_command='cut f1,4 -d"#" vehicle-data.csv > csv_data.csv',
+    dag=dag,
+)
+
+task3 = BashOperator(
+    task_id='extract_data_from_tsv',
+    bash_command='cut -f1,4 -d"#" tollplaza-data.tsv > tsv_data.csv',
+    dag=dag,
+)
+
+task4 = BashOperator(
+    task_id='extract_data_from_fixed_width',
+    bash_command='cut -f1,2 -d"#" payment-data.txt > fixed_width_data.csv',
+    dag=dag,
+)
+
+task5 = BashOperator(
+    task_id='consolidate_data',
+    bash_command='paste csv_data.csv tsv_data.csv fixed_width_data.csv > extracted_data.csv',
+    dag=dag,
+)
+
+task6 = BashOperator(
+    task_id='transform_data',
+    bash_command='tr "[a-z]" "[A-Z]" < extracted_data.csv > transformed_data.csv',
+    dag=dag,
+)
+# Task Pipeline
+task1 >> task2 >> task3 >> task4 >> task5 >> task6
+
