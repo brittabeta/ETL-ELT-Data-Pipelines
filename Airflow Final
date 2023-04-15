@@ -1,4 +1,4 @@
-from airflow import DAG # import the DAG module from the Airflow collection
+from airflow import DAG 
 from airflow.operators.bash_operator import BashOperator
 from datetime import timedelta
 from airflow.utils.dates import days_ago
