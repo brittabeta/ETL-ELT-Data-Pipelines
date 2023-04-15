@@ -1,0 +1,291 @@
+Download and extract Kafka
+# terminal, commands
+# download Kafka
+wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz
+kafka_2.12-2.8.0.tgz    100%[=============================>]  68.23M  22.6MB/s    in 3.0s    
+2023-04-14 17:53:10 (22.6 MB/s) - ‘kafka_2.12-2.8.0.tgz’ saved [71542357/71542357]
+# extract kafka from the zip file
+tar -xzf kafka_2.12-2.8.0.tgz
+creates a new directory ‘kafka_2.12-2.8.0’ in the current directory
+
+Start ZooKeeper
+# required for Kafka to work
+# start the ZooKeeper server
+cd kafka_2.12-2.8.0
+bin/zookeeper-server-start.sh config/zookeeper.properties
+# ZooKeeper is responsible for overall management of Kafka cluster, monitors the Kafka brokers, notifies Kafka if any broker or partition goes down, or if a new broker or partition goes up
+
+Start the Kafka broker service
+# terminal, commands
+# start the Kafka message broker
+cd kafka_2.12-2.8.0
+bin/kafka-server-start.sh config/server.properties
+
+Create a topic
+# need to create a topic before you can start to post messages
+# create a topic, news
+# terminal, command
+cd kafka_2.12-2.8.0
+bin/kafka-topics.sh --create --topic news --bootstrap-server localhost:9092
+Created topic news.
+
+Start Producer
+# need a producer to send messages to Kafka
+# start the producer
+bin/kafka-console-producer.sh --topic news --bootstrap-server localhost:9092
+> prompt
+# type any text message
+I am a cage in search of a bird
+I am free and that is why i am lost
+All language is but a poor translation
+
+Start Consumer
+# need a consumer to read messages from Kafka
+# terminal, command
+cd kafka_2.12-2.8.0
+bin/kafka-console-consumer.sh --topic news --from-beginning --bootstrap-server localhost:9092
+I am a cage in search of a bird
+I am free and that is why i am lost
+All language is but a poor translation
+# can go back to producer terminal and type more messages, one per line, and they appear
+Paths are made for walking
+Paths are made for walking
+
+Explore Kafka directories
+# /tmp/kafka-logs to store the messages
+# news-0 inside /tmp/kafka-logs
+# folder /home/project/kafka_2.12-2.8.0
+# bin subdirectory: shell scripts to control kafka and zookeepers
+# config subdirectory: configuration files
+# logs: log files for kafka and zookeeper
+
+More
+# create new topic weather
+bin/kafka-topics.sh --create --topic weather --bootstrap-server localhost:9092
+# post messages to topic weather
+bin/kafka-console-producer.sh --topic weather --bootstrap-server localhost:9092
+Sunny
+Cloudy
+Rain
+Snow
+# read the messages from the weather topic
+bin/kafka-console-consumer.sh --topic weather --from-beginning --bootstrap-server localhost:9092
+Sunny
+Cloudy
+Rain
+Snow
+
+Clean up
+# delete the kafka installation
+rm kafka_2.12-2.8.0.tgz
+
+##############
+Message Keys, Partitions, Offset
+
+Setup
+# terminal, command
+# download kafka
+wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz
+# extract kafka from zip file 
+tar -xzf kafka_2.12-2.8.0.tgz
+# new directory ‘kafka_2.12-2.8.0’ created in current directory
+
+Start Zookeeper
+cd kafka_2.12-2.8.0
+bin/zookeeper-server-start.sh config/zookeeper.properties
+# zookeeper is responsible for overall management of a kafka cluster, monitors kafka brokers and notifies kafka if any broker or partition goes down, or if a new broker or partition comes up
+
+Start Apache Kafka Server
+# terminal, command
+# start kafka server
+cd kafka_2.12-2.8.0
+bin/kafka-server-start.sh config/server.properties
+
+Create a topic and producer for processing bank ATM transactions
+# create bankbranch topic to process messages from the ATM machines of bank branches, messages come from the ATM as JSON object including ATM id and transaction id: {"atmid": 1, "transid": 100}
+# terminal, go to extracted kafka folder
+cd kafka_2.12-2.8.0
+# create a new topic using  -  -topic argument with name bankbranch
+# specify -  -partitions 2 argument to create two partitions for bankbranch topic
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic bankbranch  --partitions 2
+# list all topics to verify bankbranch creation
+cd kafka_2.12-2.8.0
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+bankbranch
+# check details of the topic with - -describe
+bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic bankbranch
+Topic: bankbranch       TopicId: ZUAb-sCWTsO94Z2owRrmdw PartitionCount: 2       ReplicationFactor: 1  Configs: segment.bytes=1073741824
+        Topic: bankbranch       Partition: 0    Leader: 0       Replicas: 0     Isr: 0
+        Topic: bankbranch       Partition: 1    Leader: 0       Replicas: 0     Isr: 0
+# bankbranch has 2 partitions: 0 and 1
+# no message keys are specified
+# messages will be published to partitions in an alternating sequence:
+## part 0 -> part 1 -> part 0 -> part 1…
+# create a producer
+# producer to publish ATM transaction messages
+# same terminal as topic details, create producer for topic bankbranch
+bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic bankbranch 
+>
+# enter several ATM transaction (messages)
+> {"atmid": 1, "transid": 100}
+> {"atmid": 1, "transid": 101}
+> {"atmid": 2, "transid": 200}
+> {"atmid": 1, "transid": 102}
+> {"atmid": 2, "transid": 201}
+# create a consumer
+## consumer to consume the messages
+# new terminal
+# go to extracted kafka folder
+cd kafka_2.12-2.8.0
+# start new consumer to subscribe to bankbranch topic
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --from-beginning
+{"atmid": 1, "transid": 101}
+{"atmid": 1, "transid": 102}
+{"atmid": 1, "transid": 100}
+{"atmid": 2, "transid": 200}
+{"atmid": 2, "transid": 201}
+# notice different order
+## the messages are not consumed in the same order that they are published
+## keep consumed messages sorted
+## why: original publish order critical in use cases such as financial transactions
+## issue: atm1 and atm2 got scattered across partitions, difficult to unravel this and consume messages from one ATM with the same order they were published
+
+Produce and consume with message keys
+# message keys
+## to ensure messages with the same key will be consumed in the same order as published
+## backend to do this: messages with same key published into same partition consumed by same consumer -> ## consumer side: original publication order retained
+## with message key specified as the atmid value, the messages from atm1 and atm2 are in order at respective partitions
+## messages with the same key will always be published to the same partition, so published order preserved within the message queue of each partition
+# current set up
+## 4 terminals: zookeeper, kafka server, producer, consumer
+# stop the consumer 
+Ctrl + c
+Processed a total of 5 messages
+$
+# stop the previous producer
+Ctrl + c
+$
+# start new producer and consumer: this time with: message keys
+## make the producer parse message keys --property parse.key=true
+## define the key separator to be : --property key.separator=:
+## message will now be: 1:{"atmid": 1, "transid": 102} ## 1 is message key ## corresponds to JSON object {"atmid": 1, "transid": 102}
+bin/kafka-console-producer.sh --bootstrap-server localhost:9092 --topic bankbranch --property parse.key=true --property key.separator=:
+>
+>1:{"atmid": 1, "transid": 102}
+>1:{"atmid": 1, "transid": 103}
+>2:{"atmid": 2, "transid": 202}
+>2:{"atmid": 2, "transid": 203}
+>1:{"atmid": 1, "transid": 104}
+# start a new consumer: this time with arguments to print: message keys
+## arguments: --property print.key=true --property key.separator=:
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --from-beginning --property print.key=true --property key.separator=:
+## messages with same key are being consumed in same order as published
+null:{"atmid": 1, "transid": 101}
+null:{"atmid": 1, "transid": 102}
+1:{"atmid": 1, "transid": 102}
+1:{"atmid": 1, "transid": 103}
+1:{"atmid": 1, "transid": 104}
+null:{"atmid": 1, "transid": 100}
+null:{"atmid": 2, "transid": 200}
+null:{"atmid": 2, "transid": 201}
+2:{"atmid": 2, "transid": 202}
+2:{"atmid": 2, "transid": 203}
+## each topic partition maintains it own message queue
+## new messages are enqueued (appended to the end of the queue) as they are published to the partition
+## once consumed, earliest messages dequeued and no longer available for consumption
+## topic partitions keep published messages in a sequence like a list
+
+Consumer Offset
+# message offset indicates a message’s position in the sequence
+## offset of an empty partition 0 of bankbranch is 0
+## offset of a partition with first message 1
+## offsets in the consumer allow you to specify the starting position for message consumption
+### from the beginning to retrieve all messages, or
+### from later point to retrieve only the latest messages
+Consumer Group
+# group related consumers together as a consumer group
+## a consumer for each ATM in the bank
+## manage all ATM related consumers together in a group
+# create a consumer group with argument --group
+# consumer group name atm-app
+# stop consumer terminical ctrl c
+# create a consumer group
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --group atm-app
+## no messages to be consumed: the offsets for both partitions have already reached to the end aka all messages have been consumed and dequeued by previous consumers
+# verify no messages to be consumed
+## stop consumer
+Ctrl c
+Processed a total of 0 messages
+## show details of consumer group atm-app
+bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group atm-app
+Consumer group 'atm-app' has no active members.
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+atm-app         bankbranch      1          5               5               0               -               -               -
+atm-app         bankbranch      0          5               5               0               -  
+### history: published 10 messages - CURRENT-OFFSET in partition 1 is 5 and 5 in partition 0
+### history: LOG-END-OFFSET indicates the last offset aka end of the sequence at 5, the end of the queue in each partition
+### current status: LAG the count of unconsumed messages for each partition 0 and 0
+# produce messages
+## producer terminal
+>1:{"atmid": 1, "transid": 105}
+>2:{"atmid": 2, "transid": 204}
+## consumer terminal
+## check consumer group again
+bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group atm-app
+Consumer group 'atm-app' has no active members.
+GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+atm-app         bankbranch      1          5               6               1               -               -               -
+atm-app         bankbranch      0          5               6               1               -
+## each partition has 1 new message to be consumed
+# start consumer again
+## see whether new messages will be consumed
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --group atm-app
+{"atmid": 1, "transid": 105}
+{"atmid": 2, "transid": 204}
+## now both partitions at end again
+# Consume messages from the beginning…
+Reset offset
+# use --reset-offsets argument to reset the index
+## reset to earliest position with --reset-offsets --to-earliest
+## stop consumer
+Ctrl c
+## reset the offset
+bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092  --topic bankbranch --group atm-app --reset-offsets --to-earliest --execute
+GROUP                          TOPIC                          PARTITION  NEW-OFFSET     
+atm-app                        bankbranch                     0          0              
+atm-app                        bankbranch                     1          0  
+## new offset 0 - the beginning
+## restart consumer
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --group atm-app
+{"atmid": 1, "transid": 101}
+{"atmid": 1, "transid": 102}
+{"atmid": 1, "transid": 102}
+{"atmid": 1, "transid": 103}
+{"atmid": 1, "transid": 104}
+{"atmid": 1, "transid": 105}
+{"atmid": 1, "transid": 100}
+{"atmid": 2, "transid": 200}
+{"atmid": 2, "transid": 201}
+{"atmid": 2, "transid": 202}
+{"atmid": 2, "transid": 203}
+{"atmid": 2, "transid": 204}
+## 12 messages are consumed
+## partitions at the end again
+Reset Offsets to Position
+# only consume the last 2 messages
+# stop the consumer
+Ctrl c
+# shift offset to left by 2 --reset-offsets --shift-by -2
+bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092  --topic bankbranch --group atm-app --reset-offsets --shift-by -2 --execute
+GROUP                          TOPIC                          PARTITION  NEW-OFFSET     
+atm-app                        bankbranch                     0          4              
+atm-app                        bankbranch                     1          4   
+# restart consumer
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --group atm-app
+{"atmid": 1, "transid": 104}
+{"atmid": 1, "transid": 105}
+{"atmid": 2, "transid": 203}
+{"atmid": 2, "transid": 204}
+## consumed 4 messages, 2 for each partition
+
+###########
