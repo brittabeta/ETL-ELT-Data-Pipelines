@@ -1,6 +1,7 @@
 From airflow import DAG # import the DAG module from the Airflow collection
 From airflow.operators.bash_operator import BashOperator
-Import datetime as dt
+From datetime import timedelta
+From airflow.utils.dates import days_ago
 
 
 # DAG arguments
