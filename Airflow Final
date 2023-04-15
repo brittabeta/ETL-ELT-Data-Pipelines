@@ -1,14 +1,14 @@
-From airflow import DAG # import the DAG module from the Airflow collection
-From airflow.operators.bash_operator import BashOperator
-From datetime import timedelta
-From airflow.utils.dates import days_ago
+from airflow import DAG # import the DAG module from the Airflow collection
+from airflow.operators.bash_operator import BashOperator
+from datetime import timedelta
+from airflow.utils.dates import days_ago
 
 
 # DAG arguments
 Default_args = {
-    'Owner': 'Britta Smith',
+    'Owner': 'brittabeta',
     'Start_date': days_ago(0), # today
-    'email': ['bretana1226@gmail.com'],
+    'email': ['brittabeta@dummy.com'],
     'email_on_failure': True,
     'email_on_retry': True,
     'retries': 1,
@@ -27,25 +27,25 @@ schedule_interval=timedelta(days=1), # every day
 # Task definitions
 task1 = BashOperator(
     task_id='unzip_data',
-    bash_command='tar -xzf /home/project/tolldata.tgz > /home/project/airflow/dags/finalassignment.txt',
+    bash_command='tar -xzf /home/project/tolldata.tgz',
     dag=dag,
 )
 
 task2 = BashOperator(
     task_id='extract_data_from_csv',
-    bash_command='cut f1,4 -d"#" vehicle-data.csv > csv_data.csv',
+    bash_command='cut f1,4 -d"," vehicle-data.csv > csv_data.csv',
     dag=dag,
 )
 
 task3 = BashOperator(
     task_id='extract_data_from_tsv',
-    bash_command='cut -f1,4 -d"#" tollplaza-data.tsv > tsv_data.csv',
+    bash_command='cut -f5,7 -d"/t" tollplaza-data.tsv > tsv_data.csv',
     dag=dag,
 )
 
 task4 = BashOperator(
     task_id='extract_data_from_fixed_width',
-    bash_command='cut -f1,2 -d"#" payment-data.txt > fixed_width_data.csv',
+    bash_command='awk 'NF{print $(NF-1),$NF} OFS="\t" payment-data.txt > fixed_width_data.csv',
     dag=dag,
 )
 
@@ -57,9 +57,8 @@ task5 = BashOperator(
 
 task6 = BashOperator(
     task_id='transform_data',
-    bash_command='tr "[a-z]" "[A-Z]" < extracted_data.csv > transformed_data.csv',
+    bash_command='awk '$5 = toupper($5)' < extracted_data.csv > transformed_data.csv',
     dag=dag,
 )
 # Task Pipeline
 task1 >> task2 >> task3 >> task4 >> task5 >> task6
-
