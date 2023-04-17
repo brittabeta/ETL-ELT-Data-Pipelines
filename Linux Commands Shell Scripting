@@ -1,0 +1,450 @@
+####Shell Commands 1
+# terminal, common line
+Navigating Directories
+cd
+Explore directories on the cloud IDE Linux system using cd command
+Special Paths
+~ Home directory ~ = /home/theia
+/ Root directory
+. Current directory
+.. Parent directory
+/home/project Project directory special empty directory provided for my work
+bin Child of the Root directory /bin child = inside
+Change working directory to home directory
+cd ~
+Enter
+~$
+Changing working directory to root directory
+cd /
+Enter
+/$
+Changing working directory to child
+cd bin
+/bin$
+Changing working directory back to home directory
+cd ../home/theia
+~$
+(or)
+(cd ~)
+Changing working directory back to project directory
+cd ../project
+/home/project$
+Browsing Directories
+ls
+Explore browsing content of directories using ls command, a special command the shell knows by default
+View files in the current working directory
+cd ~
+ls
+docker-compose         lib           README.md
+dsdriver               node_modules  skills-network-extension-v0.1.0.tgz
+entrypoint.sh          package.json  src-gen
+gen-webpack.config.js  plugins       webpack.config.js
+javasharedresources    postgres      yarn.lock
+Go to home project directory
+cd ../home/theia
+cd ../project
+ls
+Nothing
+Viewing files in any directory
+Using the path to the directory: ls [PATH TO DIRECTORY]
+ls /
+bin   dev  home  lib32  libx32  mnt  proc  run   srv  tmp  var
+boot  etc  lib   lib64  media   opt  root  sbin  sys  usr
+Output = contents of root directory
+Directory
+/bin System libraries
+/sbin Binaries that require root privileges
+/usr User programs and data
+/home Home directory
+/media Removable media device directories
+ls /bin
+bash          chgrp          false     lesspipe    nisdomainname  sh.distrib  which
+bunzip2       chmod          fgrep     ln          pidof          sleep       ypdomainname
+bzcat         chown          findmnt   login       ping           stty        zcat
+bzcmp         cp             fuser     ls          ping6          su          zcmp
+bzdiff        dash           grep      lsblk       ps             sync        zdiff
+bzegrep       date           gunzip    mkdir       pwd            tar         zegrep
+bzexe         dd             gzexe     mknod       rbash          tempfile    zfgrep
+bzfgrep       df             gzip      mktemp      readlink       touch       zforce
+bzgrep        dir            hostname  more        rm             true        zgrep
+bzip2         dmesg          kill      mount       rmdir          umount      zless
+bzip2recover  dnsdomainname  less      mountpoint  rnano          uname       zmore
+bzless        domainname     lessecho  mv          run-parts      uncompress  znew
+bzmore        echo           lessfile  nano        sed            vdir
+cat           egrep          lesskey   netstat     sh             wdctl
+Output = contents of root directory, see ls, ls runs using the file /bin/ls
+Updating and Installing Packages
+Get latest packages information
+sudo apt update
+Output = fetch the latest package information from trusted sources
+apt update does not update, just finds them
+Updating nano
+nano enables use of terminal as a text editor
+Get latest supported version of nano
+sudo apt upgrade nano
+Output = Do you want to continue? [Y/n] n 
+Abort.
+Y capital = default, so Enter = y
+Installing vim
+vim another text-editing program, does not come with system, need to install
+sudo apt install vim
+Output = Do you want to continue? [Y/n] y
+Output = install of vim
+Creating and editing Files
+Use nano to create and edit files
+Navigating to project directory
+cd /home/project
+Auto-complete the path
+cd /home/pr
+Tab
+Creating and editing a file
+nano myprogram.py
+Output = creates .py Python file called myprogram.py
+Type to the file
+print(‘Learning Linux is fun!’)
+Ctrl x to exit
+Output = Save modified buffer (ANSWERING “No” WILL DESTROY CHANGES) ?
+Y Yes
+N No   ^C Cancel
+y
+Enter
+Output = saved to file myprogram.py
+Run the Python file
+ls
+myprogram.py
+Output = myprogram.py is in working directory
+Run Python file
+python3 myprogram.py
+Learning Linux is fun!
+Auto-compete 
+python3 my
+Tab
+Learning Linux is fun!
+Display content of /usr directory: ls /usr
+bin  doc  games  include  lib  lib32  libx32  local  man  sbin  share  src
+Navigate to the /media directory: cd /media
+/media$
+Navigate to /home/project directory and display contents: ls /home/project (or) cd /home/project then ls
+myprogram.py
+/media$ (or) /home/project$
+Using nano, edit myprogram.py to add a new line containing ‘print(‘My name is…’): up arrow until nano myprogram.py Enter print(My name is Britta) ctrl X y to save enter to confirm file name
+Look at, run, read, myprogram.py: python3 myprogram.py
+My name is Britta
+Learning Linux is fun!
+Using vi create a file called done.py that prints “I am done with the lab!”: vi done.py then i then print(‘I am done with the lab!) ESC :wq Enter
+Look at done.py: python3 done.py
+Output:
+File “done.py”, line 1
+	print(‘I am done with the lab!)
+Syntax error: EOL while scanning string literal (LOL I forgot ‘
+Fix it: C edit ESC :wq python3 done.py
+Thank you: https://www.cs.colostate.edu/helpdocs/vi.html 
+I am done with the lab!
+
+####Shell Scripting 2
+Informational Commands
+Display the name of the current user
+whoami
+theia
+Display current logged in users: who
+Get basic information about the operating system
+uname
+Linux
+Print all the system informations in order: Kernel name, network node hostname, kernel release date, kernel version, machine hardware name, hardware platform, operating system
+uname -a
+Linux theiadocker-bretana1226 5.4.0-139-generic #156-Ubuntu SMP Fri Jan 20 17:27:18 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+Obtain user and group identity information
+id
+uid=1000(theia) gid=1000(theia) groups=1000(theia),27(sudo),100(users)
+Above: uid (user id) and gid (group id) for user (theia)
+Get available disk space
+df
+Filesystem     1K-blocks     Used Available Use% Mounted on
+overlay        101986876 53610048  43956592  55% /
+tmpfs              65536        0     65536   0% /dev
+tmpfs           16367228        0  16367228   0% /sys/fs/cgroup
+/dev/vda2      101986876 53610048  43956592  55% /etc/kube
+shm                65536        0     65536   0% /dev/shm
+tmpfs           16169056       16  16169040   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           16367228        0  16367228   0% /proc/acpi
+tmpfs           16367228        0  16367228   0% /proc/scsi
+tmpfs           16367228        0  16367228   0% /sys/firmware
+Above: display disk space in 512 byte blocks
+Get available disk space in “human-readable” format
+df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          98G   52G   42G  55% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs            16G     0   16G   0% /sys/fs/cgroup
+/dev/vda2        98G   52G   42G  55% /etc/kube
+shm              64M     0   64M   0% /dev/shm
+tmpfs            16G   16K   16G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs            16G     0   16G   0% /proc/acpi
+tmpfs            16G     0   16G   0% /proc/scsi
+tmpfs            16G     0   16G   0% /sys/firmware
+View currently running processes
+ps
+   PID TTY          TIME CMD
+   236 pts/0    00:00:00 bash
+   469 pts/0    00:00:00 ps
+Above: only processes owned by you
+Display all processes running, owned by other users
+ps -e
+   PID TTY          TIME CMD
+     1 ?        00:00:00 sh
+     7 ?        00:00:00 entrypoint.sh
+   154 ?        00:00:00 cron
+   155 ?        00:00:01 node
+   166 ?        00:00:00 sh
+   167 ?        00:00:00 node
+   178 ?        00:00:03 node
+   189 ?        00:00:03 node
+   204 ?        00:00:00 node
+   217 ?        00:00:00 node
+   236 pts/0    00:00:00 bash
+   470 pts/0    00:00:00 ps
+Get information on the running processes and system resources
+top (or) top -n10 (to exit automatically after 10 repetitions)
+top - 17:50:23 up 5 days,  6:46,  0 users,  load average: 0.79, 1.25, 1.22
+Tasks:  12 total,   1 running,  11 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  5.3 us,  4.7 sy,  0.0 ni, 88.6 id,  0.2 wa,  0.0 hi,  0.6 si,  0.7 st
+KiB Mem : 32734456 total,  6009820 free,  6097168 used, 20627468 buff/cache
+KiB Swap:        0 total,        0 free,        0 used. 26422648 avail Mem 
+
+   PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                  
+   189 theia     20   0 1075076  56828  32832 S   0.7  0.2   0:04.50 node                     
+     1 theia     20   0    4636    876    804 S   0.0  0.0   0:00.02 sh                       
+     7 theia     20   0   12892   3316   3012 S   0.0  0.0   0:00.01 entrypoint.sh            
+   154 root      20   0   31320   2900   2620 S   0.0  0.0   0:00.00 cron   
+Above: summary information of the system and a table of more detailed information related to the processes or threads currently running and managed by the kernel, including cpu and memory usage per process
+Areas: Summary Area (information like system uptime, number of users, load average, overall memory usage), Column header (attribute names), Task area (the data for each process PID)
+Refresh: keeps refreshing until…q or ctrl C
+Sorting top: with top running - M Memory Usage sort, P CPU Usage sort, N Process ID PID sort, T Running time sort
+Display Messages
+echo “Hello echo usage”
+Hello echo usage
+Special Characters with echo (use with -e): \n to start a new line or \t to insert tab
+echo -e “Print \nin two lines”
+Print
+in two lines
+Display date and time
+date
+Sun Apr 16 18:00:35 EDT 2023 (current date and time)
+Display date and time in mm/dd/yy format
+date “+%D”
+04/16/23
+Format Specifiers: %d day of month (01 to 31), %h display month name abbreviation (Jan to Dec), %m display month of year (01 to 12), %Y display four-digit year, %T display time in 24 hour format HH:MM:SS, %H display the hour
+View the Reference Manual for a Command
+man date
+Output: description and arguments, q to quit
+
+File and directory management commands
+Get the location of the current working directory
+pwd
+/home/project
+List the files and directories
+ls
+Nothing
+List files in the /bin directory
+ls /bin
+Lots of binary and executable files (including ls and pwd)
+ls /bin/ls
+/bin/ls
+List all files starting with b in the /bin directory
+ls /bin/b*
+/bin/bash     /bin/bzcmp    /bin/bzexe    /bin/bzip2         /bin/bzmore
+/bin/bunzip2  /bin/bzdiff   /bin/bzfgrep  /bin/bzip2recover
+/bin/bzcat    /bin/bzegrep  /bin/bzgrep   /bin/bzless
+Print a long list of files with additional information, last modified date
+ls -l /bin
+…
+-rwxr-xr-x 1 root root     140 Apr  8  2022 zegrep
+-rwxr-xr-x 1 root root     140 Apr  8  2022 zfgrep
+-rwxr-xr-x 1 root root    2131 Apr  8  2022 zforce
+-rwxr-xr-x 1 root root    6456 Apr  8  2022 zgrep
+-rwxr-xr-x 1 root root    2037 Apr  8  2022 zless
+-rwxr-xr-x 1 root root    1910 Apr  8  2022 zmore
+-rwxr-xr-x 1 root root    5071 Apr  8  2022 znew
+ls command options:
+-a all files including hidden
+-d directories only, not files
+-h with -l and -s, print sizes like 1K 234M 2G
+-l include attributes like: permissions, owner, size, last-modified date
+-S sort by file size, largest first
+-t sort by last-modified date, newest first
+-r reverse the sort order
+Get a long list of all files including hidden files
+ls -la /etc
+…
+-rw-r--r-- 1 root     root      1260 Feb 25  2018 ucf.conf
+drwxr-xr-x 3 root     root      4096 Feb 27 12:18 ufw
+drwxr-xr-x 1 root     root      4096 Feb 27 12:12 update-motd.d
+-rw-r--r-- 1 root     root      4942 Apr  8  2019 wgetrc
+drwxr-xr-x 1 root     root      4096 Feb 27 12:23 X11
+drwxr-xr-x 3 root     root      4096 Feb 27 12:12 xdg
+drwxr-xr-x 3 root     root      4096 Feb 27 12:12 xml
+Above: combining -l and -a to -la
+Create a directory names scripts
+mkdir scripts
+ls
+scripts
+Change current working directory to the scripts directory
+cd scripts
+/home/project/scripts$
+Verify you are working in the scripts directory
+pwd
+/home/project/scripts
+Go back to home directory
+cd
+~$
+pwd
+/home/theia
+Go to the parent directory of the current directory
+cd ..
+/home$
+cd
+~$
+Create an empty file myfile.txt
+touch myfile.txt
+ls
+docker-compose         javasharedresources  package.json  skills-network-extension-v0.1.0.tgz
+dsdriver               lib                  plugins       src-gen
+entrypoint.sh          myfile.txt           postgres      webpack.config.js
+gen-webpack.config.js  node_modules         README.md     yarn.lock
+Note: if the file already exists, touch updates the access timestamp or last-modified date
+date -r myfile.txt
+Sun Apr 16 18:21:48 EDT 2023
+Search and Locate Files
+find
+Search for files in a directory, based on attributes: name, type, owner, size, timestamp
+Seaches the entire directory tree starting from the given directory name
+Find all .txt files in the /etc directory
+find /etc -name ‘*.txt’
+/etc/X11/rgb.txt
+/etc/cassandra/triggers/README.txt
+find: ‘/etc/ssl/private’: Permission denied
+/etc/java-11-openjdk/security/policy/README.txt
+Remove files
+rm -i
+Command rm used to delete files, ideally with -i to ask for confirmation before deletion
+Remove myfile.txt
+rm -i myfile.txt
+y
+ls
+docker-compose         lib           README.md
+dsdriver               node_modules  skills-network-extension-v0.1.0.tgz
+entrypoint.sh          package.json  src-gen
+gen-webpack.config.js  plugins       webpack.config.js
+javasharedresources    postgres      yarn.lock
+Move, Rename a file
+mv
+Make a file called users.txt
+touch users.txt
+Note: if the target file already exists with mv, it will be overwritten by the source file
+Note2: also a rename option
+Rename users.txt as user-info.txt
+mv users.txt user-info.txt
+docker-compose         node_modules                         src-gen
+dsdriver               package.json                         user-info.txt
+entrypoint.sh          plugins                              webpack.config.js
+gen-webpack.config.js  postgres                             yarn.lock
+javasharedresources    README.md
+lib                    skills-network-extension-v0.1.0.tgz
+Move the user-info.txt file to the /tmp directory
+mv user-info.txt /tmp
+Verify movement
+ls
+Not there
+ls -l /tmp
+…
+-rw-r--r-- 1 theia theia        0 Apr 16 18:28 user-info.txt
+srwxr-xr-x 1 theia theia        0 Apr 16 17:39 vscode-git-cf1816fa35.sock
+drwxr-xr-x 2 theia theia     4096 Apr 16 17:39 yarn--1681681174214-0.40136962783249097
+Copy files
+cp
+Copy user-info.txt to current working directory (from /tmp)
+cp /tmp/user-info.txt user-info.txt
+ls
+docker-compose         node_modules                         src-gen
+dsdriver               package.json                         user-info.txt
+entrypoint.sh          plugins                              webpack.config.js
+gen-webpack.config.js  postgres                             yarn.lock
+javasharedresources    README.md
+lib                    skills-network-extension-v0.1.0.tgz
+Copy the content of /etc/passwd to a file called users.txt under the current directory
+cp /etc/passwd user.txt (a new file)
+ls
+docker-compose         lib           README.md                            webpack.config.js
+dsdriver               node_modules  skills-network-extension-v0.1.0.tgz  yarn.lock
+entrypoint.sh          package.json  src-gen
+gen-webpack.config.js  plugins       user-info.txt
+javasharedresources    postgres      users.txt
+Access Control Commands
+Get the required files from https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-LX0117EN-SkillsNetwork/labs/module%201/usdoi.txt
+wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-LX0117EN-SkillsNetwork/labs/module%201/usdoi.txt
+Permissions categories: owner, group, all users
+Permissions: read r, write w, execute x, - no permission r/w/x
+Permission sets: 3ownerpermissions 3grouppermissions 3alluserspermissions
+Permission set prefix: - for file, d for directory
+See permissions for the file usdoi.txt (see for a directory use -ld)
+ls -l usdoi.txt
+-rw-r--r-- 1 theia theia 8121 Sep 28  2022 usdoi.txt
+Change Permissions
+chmod (change mode)
+Options: r, w, x (permissions: read, write, execute), u, g, o (user categories: owner, group, all users), +, - (operations: grand, revoke)
+Remove Read Permission for Owner, Group, and All Users of usdoi.txt
+chmod -r usdoi.txt
+Verify removal of permissions
+ls -l usdoi.txt
+--w------- 1 theia theia 8121 Sep 28  2022 usdoi.txt
+Add Read Permission to Owner, Group, and All Users of usdoi.txt
+chmod +r usdoi.txt
+ls -l usdoi.txt
+-rw-r--r-- 1 theia theia 8121 Sep 28  2022 usdoi.txt
+Remove the Read Permission for ‘All Users’
+chmod o-r usdoi.txt
+ls -l usdoi.txt
+-rw-r----- 1 theia theia 8121 Sep 28  2022 usdoi.txt
+Practice
+Display content of /home directory
+ls /home
+project  theia
+Ensure you are in your home directory
+cd
+pwd
+/home/theia
+Create a new directory called final in home directory
+mkdir final
+ls
+docker-compose  gen-webpack.config.js  plugins                              usdoi.txt
+dsdriver        javasharedresources    postgres                             user-info.txt
+entrypoint.sh   lib                    README.md                            users.txt
+final           node_modules           skills-network-extension-v0.1.0.tgz  webpack.config.js
+      package.json           src-gen                              yarn.lock
+View permissions of final directory
+ls -ld final
+drwxr-xr-x 2 theia theia 4096 Apr 16 20:58 final
+Create a new blank file display.sh in final directory
+cd final
+touch display.sh
+Create a copy of display.sh called report.sh
+cp display.sh report.sh
+Delete the file display.sh
+rm -i display.sh
+List files in /etc directory in ascending order by access time
+ls -ltr /etc/
+total 676
+-rw-r--r-- 1 root     root        34 Jan 27  2016 ld.so.conf
+-rw-r--r-- 1 root     root       367 Jan 27  2016 bindresvport.blacklist
+-rw-r--r-- 1 root     root     24301 Jul 15  2016 mime.types
+-rw-r--r-- 1 root     root       449 Jul 15  2016 mailcap.order
+-rw-r--r-- 1 root     root       497 Oct  5  2016 nsswitch.conf…
+Display the current time
+date ‘+%T’
+21:07:16
+Copy the file /var/log/bootstrap.log to current directory
+cp /var/log/bootstrap.log .
+Note: period . above
+ls
+bootstrap.log  report.sh
+
