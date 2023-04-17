@@ -1,0 +1,213 @@
+Objectives
+Metacharacters
+Quoting
+Variables
+Command substitution
+I/O Redirection
+Pipes and Filters
+Command line arguments
+
+Metacharacters
+
+# This is a comment line
+
+pwd;date
+/home/project
+Mon Apr 17 16:33:01 EDT 2023
+
+ls /etc/*.conf
+/etc/adduser.conf          /etc/host.conf       /etc/mongodb.conf   /etc/sensors3.conf
+/etc/ca-certificates.conf  /etc/ld.so.conf      /etc/nsswitch.conf  /etc/sysctl.conf
+/etc/debconf.conf          /etc/libaudit.conf   /etc/ntp.conf       /etc/ucf.conf
+/etc/deluser.conf          /etc/logrotate.conf  /etc/pam.conf
+/etc/gai.conf              /etc/mke2fs.conf     /etc/resolv.conf
+
+ls /bin/?grep
+/bin/egrep  /bin/fgrep  /bin/zgrep
+
+Quoting
+
+echo The symbol for multiplicaton is \*
+The symbol for multiplicaton is *
+
+echo 'Following are some special characters in shell - < > ; " ( ) \ [ ]  '
+Following are some special characters in shell - < > ; " ( ) \ [ ]
+
+echo "Current user name: $USERNAME"
+Current user name: bretana1226
+
+echo 'Current user name: $USERNAME'
+Current user name: $USERNAME
+
+Working with Variables
+
+set
+...
+a lot of variables
+...
+oc_discourage_it () 
+{ 
+    cmd=$@;
+    if [[ "$cmd" =~ $re1 && "$cmd" =~ $re2 && "${SN_KUBECTL_CONTEXT}" == "$(command kubectl config current-context)" ]]; then
+        echo "***WARNING***";
+        echo "You're trying to run oc exec with the '-i' or '-t' flags!";
+        echo "Running oc interactively (passing '-it' flags) is not allowed in this environment.";
+        echo "Please try the command again omitting the '-it' flags.";
+        echo "For more information see: https://wiki.skills.network/en/PublicHandbooks/Labs/NoInteractiveKubectl";
+        echo "";
+        return 1;
+    fi;
+    command oc "$@"
+}
+
+balance=10000
+echo $balance
+10000
+
+export balance
+
+env
+...
+TERM=xterm-color
+SHELL=/bin/bash
+balance=10000
+npm_package_theia_frontend_config_preferences_ruby_useLanguageServer=true
+THEIA_DEFAULT_PLUGINS=local-dir:/home/theia/plugins
+npm_package_devDependencies__theia_cli=1.24.0
+...
+
+
+echo "Current account balance is $balance"
+Current account balance is 10000
+
+unset balance
+
+echo $balance
+_
+
+Command Substitution
+
+myip=$(hostname -i)
+echo $myip
+172.22.128.111
+
+echo "Running on host: $(hostname)"
+Running on host: theia-bretana1226
+
+ls -l `which cat`
+-rwxr-xr-x 1 root root 35064 Jan 18  2018 /bin/cat
+
+I/O Redirection
+
+ifconfig > output.txt
+
+cat output.txt
+...
+like ifconfig output
+...
+
+date > output.txt
+
+cat output.txt
+Mon Apr 17 16:49:57 EDT 2023
+# overwrote
+
+uname -a >> newoutput.txt
+date >> newoutput.txt
+
+cat newoutput.txt
+Linux theia-bretana1226 5.4.0-139-generic #156-Ubuntu SMP Fri Jan 20 17:27:18 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+Mon Apr 17 16:50:55 EDT 2023
+
+tr "[a-z]" "[A-Z]" < newoutput.txt
+LINUX THEIA-BRETANA1226 5.4.0-139-GENERIC #156-UBUNTU SMP FRI JAN 20 17:27:18 UTC 2023 X86_64 X86_64 X86_64 GNU/LINUX
+MON APR 17 16:50:55 EDT 2023
+
+Pipes and Filters
+
+ls | wc -l 
+2
+
+df -h|grep overlay
+overlay          98G   53G   41G  57% /
+
+ls -lS /bin | head -6
+total 5724
+-rwxr-xr-x 1 root root 1113504 Apr 18  2022 bash
+-rwxr-xr-x 1 root root  423312 Mar 15  2022 tar
+-rwxr-xr-x 1 root root  245872 Mar  6  2018 nano
+-rwxr-xr-x 1 root root  219456 Sep 18  2019 grep
+-rwxr-xr-x 1 root root  170760 Nov 30  2017 less
+
+Command Line Arguments
+
+# wish.sh bash script
+
+#! /bin/bash
+echo "Hi $1 $2"
+#$1 is the first argument passed to the script
+echo "$1 is your firstname"
+#$2 is the second argument passed to the script
+echo "$2 is your lastname"
+
+# chmod +x wish.sh
+
+# ./wish.sh Ramesh Sannareddy
+
+# Hi Ramesh Sannareddy
+# Ramesh is your firstname
+# Sannareddy is your lastname
+
+# dirinfo.sh bash script
+
+#! /bin/bash
+
+dircount=$(find $1 -type d|wc -l)
+
+filecount=$(find $1 -type f|wc -l)
+
+echo "There are $dircount directories in the directory $1"
+
+echo "There are $filecount files in the directory $1"
+
+# chmod +x dirinfo.sh
+
+# ./dirinfo.sh /tmp
+
+#There are 9 directories in the directory /tmp
+#There are 9 files in the directory /tmp
+
+Practice
+
+Create a variable called ‘color’ and store the string ‘light green’ in it.
+color='light green'
+
+Display the list of all the files whose name starts with ‘b’ and ends with ‘.log’ in the directory /var/log.
+ls /var/log/b*.log
+/var/log/bootstrap.log
+
+Display the count of all files whose name starts with ‘c’ in the /bin directory.
+ls /bin/c* | wc -l
+5
+
+Display the value of variable ‘color’ in a file color.txt
+echo $color > color.txt
+cat color.txt
+light green
+
+Write a shell script named latest_warnings.sh that prints the latest 5 warnings from the /var/log/bootstrap.log file.
+
+# latest_warnings.sh bash script
+
+#! /bin/bash
+grep warning /var/log/bootstrap.log|tail -5
+
+# chmod +x latest_warnings.sh
+
+# ./latest_warnings.sh 
+
+# dpkg: warning: ignoring pre-dependency problem!
+# dpkg: warning: ignoring pre-dependency problem!
+# dpkg: warning: ignoring pre-dependency problem!
+# dpkg: warning: ignoring pre-dependency problem!
+# dpkg: warning: ignoring pre-dependency problem!
