@@ -891,3 +891,90 @@ eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1480
         TX packets 7632  bytes 13703216 (13.7 MB)
         TX errors 0  dropped 1 overruns 0  carrier 0  collisions 0
 
+#####Shell Scripting 4
+#! /bin/bash
+
+# In file greet.sh
+
+# This script accepts the user's name and prints 
+# a message greeting the user
+
+# Print the prompt message on screen
+echo -n "Enter your name :"        
+
+# Wait for user to enter a name, and save the entered name into the variable 'name'
+read name                
+
+# Print the welcome message followed by the name    
+echo "Welcome $name"
+
+# The following message should print on a single line. Hence the usage of '-n'
+echo -n "Congratulations! You just created and ran your first shell script "
+echo "using Bash on IBM Skills Network"
+
+# terminal commands
+# check greet.sh permissions
+# ls -l greet.sh -> -rw-r--r-- 1 theia users 587 Apr 17 15:24 greet.sh
+# it has read permission so...execute it
+# bash greet.sh
+# Enter your name :Britta
+# Welcome Britta
+# Congratulations! You just created and ran your first shell script using Bash on IBM Skills Network
+
+# Using 'Shabang' line
+# made greet.sh executable, so...
+# name of script can be used like a command
+
+# specify the path to the interpreter of the script
+# interpreter = bash
+# which bash
+# which: find the path to interpreter
+# /bin/bash
+# add the shabang line to the script: see 1st line above #! /bin/bash
+
+# check permissions of the script
+# make greet.sh completely executable by name
+# chmod +x greet.sh
+# ls -l greet.sh -> -rwxr-xr-x
+# everyone can execute
+# change persmissions again
+# chmod u+x greet.sh
+# ls -l greet.sh -> -rwxr-xr-x
+# now i can execute with: ./greet.sh
+## the . refers to current directory
+## 'linux execute greet.sh in current directory'
+# Enter your name :Britta
+# Welcome Britta
+# Congratulations! You just created and ran your first shell script using Bash on IBM Skills Network
+
+#! /bin/bash
+# above shebang
+
+# This script accepts the user's name and prints 
+# a message greeting the user
+
+# Print the prompt message on screen
+echo -n "Enter your firstname :"        
+
+# Wait for user to enter a name, and save the entered name into the variable 'name'
+read firstname                
+
+# Print the prompt message on screen
+echo -n "Enter your lastname :"        
+
+# Wait for user to enter a name, and save the entered name into the variable 'name'
+read lastname    
+
+# Print the welcome message followed by the name    
+echo "Hello $firstname $lastname."
+
+# check permissions
+# ls -l greetnew.sh  -rw-r--r--
+# make executable by me
+# chmod u+x greetnew.sh
+# ls -l greetnew.sh  -rwxr--r--
+# execute
+# ./greetnew.sh
+# Enter your firstname :Britta
+# Enter your lastname :Smith
+# Hello Britta Smith.
