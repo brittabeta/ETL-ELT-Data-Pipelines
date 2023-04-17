@@ -448,3 +448,446 @@ Note: period . above
 ls
 bootstrap.log  report.sh
 
+### Linux Commands and Shell Scripting: 3
+Viewing file content
+Download usdoi.txt in current directory
+$ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/usdoi.txt
+Display all file contents of usdoi.txt
+$ cat usdoi.txt
+The unanimous Declaration of the thirteen united States of America, When in the
+Course of human events, it becomes necessary for one people to dissolve the
+political bands which have connected them with another, and to assume among the
+powers of the earth, the separate and equal station to which the Laws of Nature
+and of Nature's God entitle them, a decent respect to the opinions of mankind
+requires that they should declare the causes which impel them to the
+…
+Display file contents page-wise
+$ more usdoi.txt
+Space -> next page 
+…
+We hold these truths to be self-evident, that all men are created equal, that
+they are endowed by their Creator with certain unalienable Rights, that among
+--More--(7%)
+Space
+…
+Governments long established should not be changed for light and transient
+causes; and accordingly all experience hath shewn, that mankind are more
+disposed to suffer, while evils are sufferable, than to right themselves by
+--More--(17%)
+Display first 10 lines of file usdoi.txt
+q
+$ head usdoi.txt
+The unanimous Declaration of the thirteen united States of America, When in the
+Course of human events, it becomes necessary for one people to dissolve the
+political bands which have connected them with another, and to assume among the
+powers of the earth, the separate and equal station to which the Laws of Nature
+and of Nature's God entitle them, a decent respect to the opinions of mankind
+requires that they should declare the causes which impel them to the
+separation.
+
+We hold these truths to be self-evident, that all men are created equal, that
+they are endowed by their Creator with certain unalienable Rights, that among
+Note: blank line = 1 line of 10
+Display first 3 lines
+$ head -3 usdoi.txt
+The unanimous Declaration of the thirteen united States of America, When in the
+Course of human events, it becomes necessary for one people to dissolve the
+political bands which have connected them with another, and to assume among the
+Display last 10 lines
+$ tail usdoi.txt
+People of these Colonies, solemnly publish and declare, That these United
+Colonies are, and of Right ought to be Free and Independent States; that they
+are Absolved from all Allegiance to the British Crown, and that all political
+connection between them and the State of Great Britain, is and ought to be
+totally dissolved; and that as Free and Independent States, they have full
+Power to levy War, conclude Peace, contract Alliances, establish Commerce, and
+to do all other Acts and Things which Independent States may of right do. And
+for the support of this Declaration, with a firm reliance on the protection of
+divine Providence, we mutually pledge to each other our Lives, our Fortunes and
+our sacred Honor.
+Display last 2 lines
+$ tail -2 usdoi.txt
+divine Providence, we mutually pledge to each other our Lives, our Fortunes and
+our sacred Honor.
+Count lines, words, characters
+Find the number of lines, words, and characters of usdoi.txt
+$ wc usdoi.txt
+152 1330 8121 usdoi.txt
+Find only the number of lines
+$ wc -l usdoi.txt
+152 usdoi.txt
+Find only the number of words
+$ wc -w usdoi.txt
+1330 usdoi.txt
+Find only the number of characters 
+$ wc -c usdoi.txt
+8121 usdoi.txt
+Customizing view of file content
+View sorted file lines of usdoi.txt
+$ sort usdoi.txt
+abolishing the forms to which they are accustomed. But when a long train of
+absolute rule into these Colonies:
+abuses and usurpations, pursuing invariably the same Object evinces a design to
+and correspondence. They too have been deaf to the voice of justice and of
+and magnanimity, and we have conjured them by the ties of our common kindred to
+and of Nature's God entitle them, a decent respect to the opinions of mankind
+and organizing its powers in such form, as to them shall seem most likely to
+Appropriations of Lands.
+are Absolved from all Allegiance to the British Crown, and that all political
+Arms against their Country, to become the executioners of their friends and
+…
+View reverse-sorted lines of usdoi.txt
+$ sort -r usdoi.txt
+within.
+We, therefore, the Representatives of the united States of America, in General
+We hold these truths to be self-evident, that all men are created equal, that
+waging War against us.
+unworthy the Head of a civilized nation.
+unwarrantable jurisdiction over us. We have reminded them of the circumstances
+…
+View with repeated, consecutive lines merged into one of file zoo.txt
+Obtain zoo.txt
+$ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-LX0117EN-SkillsNetwork/labs/module%201/zoo.txt
+View contents of zoo.txt
+$ cat zoo.txt
+zebra
+zebra
+lion
+lion
+anaconda
+zebra
+zebra
+lion
+zebra
+View the contents of zoo.txt with equal, consecutive lines merged into one
+$ uniq zoo.txt
+zebra
+lion
+anaconda
+zebra
+lion
+zebra
+Extract lines matching specified criteria
+Extract all lines of usdoi.txt containing the word people
+$ grep people usdoi.txt
+Course of human events, it becomes necessary for one people to dissolve the
+people, unless those people would relinquish the right of Representation in the
+firmness his invasions on the rights of the people.
+to harrass our people, and eat out their substance.
+the lives of our people.
+Tyrant, is unfit to be the ruler of a free people.
+Options with grep: -n (along with matching lines, also print the line numbers), -c (get count of matching lines), -i (ignore the case of the text while matching), -v (print all lines which do not contain the pattern), -w (match only if the pattern matches whole words)
+Print all lines from /etc/passwd file, not containing the pattern login
+$ grep -v login /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+sync:x:4:65534:sync:/bin:/bin/sync
+theia:x:1000:1000:,,,:/home/theia:/bin/bash
+postgres:x:105:109:PostgreSQL administrator,,,:/var/lib/postgresql:/bin/bash
+View lines of file with filter applied to each line
+View the first 2 characters of each line
+$ cut -c -2 zoo.txt
+ze
+ze
+li
+li
+an
+ze
+ze
+li
+ze
+View each list from the second character
+$ cut -c 2- zoo.txt
+ebra
+ebra
+ion
+ion
+naconda
+ebra
+ebra
+ion
+ebra
+View multiple files side by side
+Download file zoo_ages.txt
+$ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-LX0117EN-SkillsNetwork/labs/module%201/zoo_ages.txt
+View zoo.txt and zoo_ages.txt with lines aligned as columns
+$ paste zoo.txt zoo_ages.txt
+zebra   17
+zebra   12
+lion    7
+lion    4
+anaconda        3
+zebra   4
+zebra   1
+lion    0
+zebra   1
+View zoo.txt and zoo_ages.txt with delimiter , instead of /t
+$ paste -d “,” zoo.txt zoo_ages.txt
+zebra,17
+zebra,12
+lion,7
+lion,4
+anaconda,3
+zebra,4
+zebra,1
+lion,0
+zebra,1
+File and folder archiving and compression
+Create and manage file archives
+Create an archive of the entire /bin directory into a file bin.tar
+$ tar -cvf bin.tar /bin
+…
+/bin/ping
+/bin/ping6
+/bin/netstat
+/bin/rnano
+/bin/nano
+/bin/fuser
+/bin/lesskey
+/bin/less
+/bin/lessfile
+/bin/lesspipe
+/bin/lessecho
+Options with tar: -c (create new archive file), -v (verbosely list files processed), -f (archive file name)
+See the list of files in the archive
+$ tar -tvf bin.tar
+…
+-rwxr-xr-x root/root     35928 2018-12-11 10:46 bin/fuser
+-rwxr-xr-x root/root     19856 2017-11-30 23:11 bin/lesskey
+-rwxr-xr-x root/root    170760 2017-11-30 23:11 bin/less
+lrwxrwxrwx root/root         0 2017-11-30 23:11 bin/lessfile -> lesspipe
+-rwxr-xr-x root/root      8564 2017-11-30 23:11 bin/lesspipe
+-rwxr-xr-x root/root     10256 2017-11-30 23:11 bin/lessecho
+Untar the archive, extract files from the archive
+$ tar -xvf bin.tar
+…
+bin/nano
+bin/fuser
+bin/lesskey
+bin/less
+bin/lessfile
+bin/lesspipe
+bin/lessecho
+Verify the folder bin is extracted
+$ ls -l
+total 5592
+drwxr-sr-x 2 theia users    4096 Feb 27 12:29 bin
+-rw-r--r-- 1 theia users 5703680 Apr 17 11:35 bin.tar
+-rw-r--r-- 1 theia users    8121 Sep 21  2022 usdoi.txt
+-rw-r--r-- 1 theia users      20 Sep 28  2022 zoo_ages.txt
+-rw-r--r-- 1 theia users      54 Sep 28  2022 zoo.txt
+Package and compress archive files
+Create a zip file config.zip with files having extension .conf in /etc directory
+$ zip config.zip /etc/*.conf
+…
+  adding: etc/nsswitch.conf (deflated 49%)
+  adding: etc/ntp.conf (deflated 52%)
+  adding: etc/pam.conf (deflated 62%)
+  adding: etc/resolv.conf (deflated 27%)
+  adding: etc/sensors3.conf (deflated 82%)
+  adding: etc/sysctl.conf (deflated 61%)
+  adding: etc/ucf.conf (deflated 61%)
+Create an archive of the entire /bin directory
+$ zip -r bin.zip /bin
+…
+ adding: bin/lesskey (deflated 64%)
+  adding: bin/less (deflated 54%)
+  adding: bin/lessfile (deflated 68%)
+  adding: bin/lesspipe (deflated 68%)
+  adding: bin/lessecho (deflated 68%)
+Extract, list, test compressed files in a zip archive
+List the files of the archive config.zip
+$ unzip -l config.zip
+…
+     2517  2020-08-17 21:58   etc/ntp.conf
+      552  2018-04-04 17:56   etc/pam.conf
+      115  2023-04-17 11:09   etc/resolv.conf
+    10368  2022-03-31 16:53   etc/sensors3.conf
+     2683  2018-01-17 17:35   etc/sysctl.conf
+     1260  2018-02-25 19:58   etc/ucf.conf
+---------                     -------
+    36595                     18 files
+Extract all files in the archive bin.zip forcing overwrite and create file bin
+$ unzip -o bin.zip
+… inflating: bin/lesskey             
+  inflating: bin/less                
+  inflating: bin/lessfile            
+  inflating: bin/lesspipe            
+  inflating: bin/lessecho   
+$ ls
+bin  bin.tar  bin.zip  config.zip  usdoi.txt  zoo_ages.txt  zoo.txt
+Networking commands
+Show the system host name
+$ hostname
+Theia-bretana1226
+View the IP address of the host
+$ hostname -i
+-bretana1226:/home/project$ hostname -i
+172.22.128.73
+Test if a host is reachable
+Check if www.google.com is reachable
+$ ping www.google.com
+PING www.google.com (142.251.163.104): 56 data bytes
+64 bytes from 142.251.163.104: icmp_seq=0 ttl=104 time=1.606 ms
+64 bytes from 142.251.163.104: icmp_seq=1 ttl=104 time=1.667 ms
+64 bytes from 142.251.163.104: icmp_seq=2 ttl=104 time=1.732 ms
+64 bytes from 142.251.163.104: icmp_seq=3 ttl=104 time=1.914 ms
+64 bytes from 142.251.163.104: icmp_seq=4 ttl=104 time=1.735 ms
+64 bytes from 142.251.163.104: icmp_seq=5 ttl=104 time=1.959 ms
+…updating (keeps sending data packets to www.google.com server and prints response)
+Stop pinging
+Ctrl C
+^C--- www.google.com ping statistics ---
+81 packets transmitted, 81 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 1.490/1.700/4.266/0.393 ms
+Ping 5 times
+$ ping -c 5 www.google.com
+PING www.google.com (142.251.163.104): 56 data bytes
+64 bytes from 142.251.163.104: icmp_seq=0 ttl=104 time=1.627 ms
+64 bytes from 142.251.163.104: icmp_seq=1 ttl=104 time=1.581 ms
+64 bytes from 142.251.163.104: icmp_seq=2 ttl=104 time=1.621 ms
+64 bytes from 142.251.163.104: icmp_seq=3 ttl=104 time=1.690 ms
+64 bytes from 142.251.163.104: icmp_seq=4 ttl=104 time=1.569 ms
+--- www.google.com ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max/stddev = 1.569/1.618/1.690/0.043 ms
+Display network interface configuration
+Configure, display network interface parameters for a network, all network interfaces of the system
+$ ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1480
+        inet 172.22.128.73  netmask 255.255.255.255  broadcast 0.0.0.0
+        inet6 fe80::a8ef:31ff:fe03:d8  prefixlen 64  scopeid 0x20<link>
+        ether aa:ef:31:03:00:d8  txqueuelen 0  (Ethernet)
+        RX packets 7435  bytes 6317517 (6.3 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 6229  bytes 13391196 (13.3 MB)
+        TX errors 0  dropped 1 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 12408  bytes 15150627 (15.1 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 12408  bytes 15150627 (15.1 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+Display just the configuration of the eth0 ethernet adapter
+$ ifconfig eth0
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1480
+        inet 172.22.128.73  netmask 255.255.255.255  broadcast 0.0.0.0 # see inet IP address
+        inet6 fe80::a8ef:31ff:fe03:d8  prefixlen 64  scopeid 0x20<link>
+        ether aa:ef:31:03:00:d8  txqueuelen 0  (Ethernet)
+        RX packets 7535  bytes 6336407 (6.3 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 6300  bytes 13411149 (13.4 MB)
+        TX errors 0  dropped 1 overruns 0  carrier 0  collisions 0
+Transfer data from or to a server
+Access the file usdoi.txt using URL and display contents
+$ curl https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/usdoi.txt
+…
+connection between them and the State of Great Britain, is and ought to be
+totally dissolved; and that as Free and Independent States, they have full
+Power to levy War, conclude Peace, contract Alliances, establish Commerce, and
+to do all other Acts and Things which Independent States may of right do. And
+for the support of this Declaration, with a firm reliance on the protection of
+divine Providence, we mutually pledge to each other our Lives, our Fortunes and
+our sacred Honor.
+Access the file with the URL and save it to current working directory
+$ curl -O https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/usdoi.txt
+age.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/usdoi.txt
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  8121  100  8121    0     0  70008      0 --:--:-- --:--:-- --:--:-- 70008
+$ ls
+bin  bin.tar  bin.zip  config.zip  usdoi.txt  zoo_ages.txt  zoo.txt
+Downloading files from a URL
+Remove usdoi.txt form current directory
+$ rm usdoi.txt
+Re-download usdoi.txt
+$ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/usdoi.txt
+…
+2023-04-17 11:56:02 (335 MB/s) - ‘usdoi.txt’ saved [8121/8121]
+Practice
+Go to home directory
+$ cd ~
+$ pwd
+/home/theia
+Display your username
+$ whoami
+Theia
+View the kernel version
+$ uname -r
+5.4.0-139-generic
+Display the number of lines in the /etc/password file
+$ wc -l /etc/passwd
+25 /etc/passwd
+Display the lines that contain ‘not installed’ in /var/log/bootstrap.log
+$ grep "not installed" /var/log/bootstrap.log
+…
+  libselinux1 is not installed.
+  libpcre3 is not installed.
+  libpam0g is not installed.
+  libselinux1 is not installed.
+  libpam-modules-bin is not installed.
+  zlib1g is not installed.
+Find out all websites that have the word org in a URL
+$ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/top-sites.txt
+$ grep org top-sites.txt 
+…
+w3.org
+wikimedia.org
+creativecommons.org
+fr.wikipedia.org
+apache.org
+id.wikipedia.org
+de.wikipedia.org
+Use another method to do the above
+$ curl -o top-sites.txt https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Bash%20Scripting/top-sites.txt
+$ grep org top-sites.txt 
+…
+w3.org
+wikimedia.org
+creativecommons.org
+fr.wikipedia.org
+apache.org
+id.wikipedia.org
+de.wikipedia.org
+Print the first 7 lines of top-sites.txt
+$ head -n 7 top-sites.txt
+youtube.com
+www.google.com
+apple.com
+microsoft.com
+cloudflare.com
+play.google.com
+support.google.com
+Print the last 7 lines of top-sites.txt
+$ tail -n 7 top-sites.txt
+id.wikipedia.org
+rakuten.co.jp
+tinyurl.com
+amazon.co.jp
+de.wikipedia.org
+tools.google.com
+Zip the file top-sites.txt into a file called top-sites.zip
+$ zip top-sites.zip top-sites.txt
+  adding: top-sites.txt (deflated 58%)
+Print the first 3 characters of each line in top-sites.txt
+cut -c -3 top-sites.txt
+…
+rak
+tin
+ama
+de.
+too
+buy
+Print the details of the eth0 internet adapter
+$ ifconfig eth0
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1480
+        inet 172.22.128.73  netmask 255.255.255.255  broadcast 0.0.0.0
+        inet6 fe80::a8ef:31ff:fe03:d8  prefixlen 64  scopeid 0x20<link>
+        ether aa:ef:31:03:00:d8  txqueuelen 0  (Ethernet)
+        RX packets 9032  bytes 6684670 (6.6 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7632  bytes 13703216 (13.7 MB)
+        TX errors 0  dropped 1 overruns 0  carrier 0  collisions 0
+
