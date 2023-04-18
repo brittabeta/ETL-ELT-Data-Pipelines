@@ -28,7 +28,7 @@ echo "The second argument is $destinationDirectory"
 # [TASK 3]
 currentTS=`date +%s`
 # echo $currentTS
-# 1681834611
+# 1681840649
 # current timestamp in seconds
 # specifically seconds since 1970-01-01 00:00:00 UTC
 
@@ -36,7 +36,7 @@ currentTS=`date +%s`
 backupFileName="backup-$currentTS.tar.gz"
 # backupFileName now would be
 # echo $backupFileName
-# backup-1681834994.tar.gz
+# backup-1681840649.tar.gz
 
 # We're going to:
   # 1: Go into the target directory
@@ -53,7 +53,7 @@ origAbsPath=`pwd`
 
 # [TASK 6]
 cd $2 # <- first go to destination directory, then
-destDirAbsPath=`pwd`
+destAbsPath=`pwd`
 # the absolute path of the destination directory
 # /home/theia
 
@@ -81,9 +81,21 @@ done
 # [TASK 12] compress and archive the files
 tar -czvf $backupFileName ${toBackup[@]}
 # [TASK 13] #backupFileName in working dir, move 
-mv $backupFileName $destDirAbsPath
+mv $backupFileName $destAbsPath
 
 # Congratulations! You completed the final project for this course!
+
+# save file
+# make executable: chmod +x backup.sh 
+# verify executable: ls -l backup.sh
+## -rwxr-xr-x 1 theia users 2401 Apr 18 13:58 backup.sh
+# test script: ./backup.sh important-documents .
+# The first argument is 1
+# The second argument is 2
+# ana.txt
+# doi.txt
+# zop.txt
+# list files: ls -l
 
 # save file
 # make executable: chmod +x backup.sh 
