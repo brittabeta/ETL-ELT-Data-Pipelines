@@ -52,32 +52,47 @@ origAbsPath=`pwd`
 # /home/project
 
 # [TASK 6]
-cd # <- first go to destination directory, then
+cd $2 # <- first go to destination directory, then
 destDirAbsPath=`pwd`
 # the absolute path of the destination directory
 # /home/theia
 
 # [TASK 7]
-cd # <-
-cd # <-
+cd $origAbsPath # <- first go to original directory, then
+cd $1 # <- target directory
 
 # [TASK 8]
-yesterdayTS=
+yesterdayTS=$(($currentTS - 24 * 60 * 60))
+# to find files updated within the past 24 hours
 
 declare -a toBackup
+# declare variable toBackup, an array
 
-for file in $() # [TASK 9]
+for file in $(ls) # [TASK 9] # loop all files and directories
 do
-  # [TASK 10]
-  if (())
+  # [TASK 10] check if modified within last 24h
+  if ((`date -r $file +%s` > $yesterdayTS))
   then
-    # [TASK 11]
+    # [TASK 11] add to the toBackup array
+    toBackup+=($file)
   fi
 done
 
-# [TASK 12]
-
-# [TASK 13]
+# [TASK 12] compress and archive the files
+tar -czvf $backupFileName ${toBackup[@]}
+# [TASK 13] #backupFileName in working dir, move 
+mv $backupFileName $destDirAbsPath
 
 # Congratulations! You completed the final project for this course!
 
+# save file
+# make executable: chmod +x backup.sh 
+# verify executable: ls -l backup.sh
+## -rwxr-xr-x 1 theia users 2122 Apr 18 13:22 backup.sh
+# test script: ./backup.sh important-documents .
+# The first argument is 1
+# The second argument is 2
+# ana.txt
+# doi.txt
+# zop.txt
+# list files: ls -l
