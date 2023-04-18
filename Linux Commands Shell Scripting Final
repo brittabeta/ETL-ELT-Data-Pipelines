@@ -1,3 +1,11 @@
+## Scenario
+## You are a lead linux developer at the top-tech company "ABC International INC." ABC currently suffers from a huge 
+## bottleneck - each day, interns must painstakingly access encrypted password files on core servers, and backup those that 
+## were updated within the last 24-hours. This introduces human error, lowers security, and takes an unreasonable amount of work.
+## As ABC INC's most trusted linux developer, you have been tasked with creating a script backup.sh which automatically backs up 
+## any of these files that have been updated within the past 24 hours.
+## Objectives - Schedule shell script to run every 24 hours using crontab.
+
 #!/bin/bash
 
 # This checks if the number of arguments is correct
@@ -108,3 +116,23 @@ mv $backupFileName $destAbsPath
 # doi.txt
 # zop.txt
 # list files: ls -l
+# total 24
+# -rw-r--r-- 1 theia users 4420 Apr 18 14:08 backup-1681841300.tar.gz
+# -rwxr-xr-x 1 theia users 2697 Apr 18 14:07 backup.sh
+# drwxr-sr-x 2 theia users 4096 Apr 18 14:08 important-documents
+# -rw-r--r-- 1 theia users 4995 Sep 28  2022 important-documents.zip
+
+# create a copy in /usr/local/bin/
+# $sudo cp backup.sh /usr/local/bin/
+# schedule to run every minute
+# $crontab -e
+# */1 * * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
+# test start: $sudo service cron start
+# back up files are being created every minute
+#-rw-rw-r-- 1 theia users 4420 Apr 18 14:28 backup-1681842481.tar.gz
+#-rw-rw-r-- 1 theia users 4420 Apr 18 14:29 backup-1681842541.tar.gz
+#-rw-rw-r-- 1 theia users 4420 Apr 18 14:30 backup-1681842601.tar.gz
+# schedule backup every 24 hours
+# $crontab -e
+# * */24 * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
+# test stop: $sudo service cron stop
