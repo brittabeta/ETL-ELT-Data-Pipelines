@@ -1,0 +1,100 @@
+Scheduling Jobs using crontab
+
+crontab file syntax
+
+cron: system daemon to execute tasks in background at designated times
+
+crontab file: text file with list of commands to run at specified times, edit via crontab command, 
+each line in the file has 5 time and date fields followed by a command, followed by a newline character
+\n, fields are seperated by spaces
+
+5 time and date fields cannot contain spaces, allowed values:
+minute 0-59
+hour 0-23 (0 = midnight)
+day 1-31
+month 1-12
+weekday 0-6 (0 = Sunday)
+
+List cron jobs
+
+$ crontab -l
+no crontab for theia # crontab is empty
+
+Add a job in the crontab file
+
+$ crontab -e # opens default text editor, creates new crontab file (if does not exist)
+# GNU nano 2.9.3        /tmp/crontab.V94MPB/crontab
+# comments
+# scroll down to the end of the file: arrow key
+# add to the crontab file: job: run echo command when min 0 h 21 = 9 pm every day, output sent to /tmp/echo.txt
+0 21 * * * echo "Welcome to cron" >> /tmp/echo.txt
+# save changes ctrl x, y, Enter -> command line
+
+Check if job added to crontab
+$ crontab -l
+...
+# m h  dom mon dow   command
+0 21 * * * echo "Welcome to cron" >> /tmp/echo.txt
+
+Schedule a Shell Script
+
+diskusage.sh
+
+#! /bin/bash
+# print the current date time
+date
+# print the disk free statistics
+df -h
+
+# add permissions
+$ chmod u+x diskusage.sh
+# run the scrip
+$ ./diskusage.sh
+Tue Apr 18 09:52:58 EDT 2023
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          98G   58G   36G  63% /
+tmpfs            64M     0   64M   0% /dev
+tmpfs            16G     0   16G   0% /sys/fs/cgroup
+/dev/vda2        98G   58G   36G  63% /etc/hosts
+shm              64M     0   64M   0% /dev/shm
+tmpfs            28G   16K   28G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs            16G     0   16G   0% /proc/acpi
+tmpfs            16G     0   16G   0% /proc/scsi
+tmpfs            16G     0   16G   0% /sys/firmware
+
+Schedule diskusage.sh script run
+
+Edit crontab file
+$ crontab -e
+
+Add to end of crontab file
+0 0 * * * /home/project/diskusage.sh >>/home/project/diskusage.log
+
+Save and ext
+ctrl x, y, Enter
+
+View jobs in crontab file
+$ crontab -l
+# m h  dom mon dow   command
+0 21 * * * echo "Welcome to cron" >> /tmp/echo.txt
+0 0 * * * /home/project/diskusage.sh >>/home/project/diskusage.log
+
+Remove the current crontab
+
+Caution: crontab -r removes ALL cron jobs, watch out on a production server
+
+$ crontab -r
+
+$ crontab -l
+no crontab for theia
+
+Practice
+
+Create a cron job that runs the task date >> /tmp/everymin.txt every minute
+
+$ crontab -e
+* * * * * date >> /tmp/everymin.txt
+ctrl x, y, Enter
+$ crontab -l
+# m h  dom mon dow   command
+* * * * * date >> /tmp/everymin.txt
