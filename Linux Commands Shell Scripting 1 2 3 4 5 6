@@ -902,7 +902,7 @@ eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1480
 # Print the prompt message on screen
 echo -n "Enter your name :"        
 
-# Wait for user to enter a name, and save the entered name into the variable 'name'
+# Wait for user to enter a name, and save the entered name into the 'name'
 read name                
 
 # Print the welcome message followed by the name    
