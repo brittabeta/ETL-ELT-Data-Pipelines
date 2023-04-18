@@ -24,14 +24,12 @@ then
 fi
 
 # [TASK 1]
-targetDirectory=1
-destinationDirectory=2
+targetDirectory=$1
+destinationDirectory=$2
 
 # [TASK 2]
-echo "The first argument is $targetDirectory"
-# The first argument is 1
-echo "The second argument is $destinationDirectory"
-# The second argument is 2
+echo "Target directory: $targetDirectory"
+echo "Backup destination: $destinationDirectory"
 
 # [TASK 3]
 currentTS=`date +%s`
@@ -55,19 +53,14 @@ backupFileName="backup-$currentTS.tar.gz"
 
 # [TASK 5]
 origAbsPath=`pwd`
-# the absolute path of the current directory
-# echo $origAbsPath
-# /home/project
 
 # [TASK 6]
-cd $2 # <- first go to destination directory, then
+cd $destinationDirectory # <- 
 destAbsPath=`pwd`
-# the absolute path of the destination directory
-# /home/theia
 
 # [TASK 7]
-cd $origAbsPath # <- first go to original directory, then
-cd $1 # <- target directory
+cd $origAbsPath # <- 
+cd $targetDirectory # <- 
 
 # [TASK 8]
 yesterdayTS=$(($currentTS - 24 * 60 * 60))
@@ -124,15 +117,13 @@ mv $backupFileName $destAbsPath
 
 # create a copy in /usr/local/bin/
 # $sudo cp backup.sh /usr/local/bin/
-# schedule to run every minute
+# schedule to run every minute and every 24 hours
 # $crontab -e
-# */1 * * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
+# $crontab -l
+# 0 0 * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
 # test start: $sudo service cron start
 # back up files are being created every minute
 #-rw-rw-r-- 1 theia users 4420 Apr 18 14:28 backup-1681842481.tar.gz
 #-rw-rw-r-- 1 theia users 4420 Apr 18 14:29 backup-1681842541.tar.gz
 #-rw-rw-r-- 1 theia users 4420 Apr 18 14:30 backup-1681842601.tar.gz
-# schedule backup every 24 hours
-# $crontab -e
-# * */24 * * * /usr/local/bin/backup.sh /home/project/important-documents /home/project
 # test stop: $sudo service cron stop
