@@ -56,7 +56,7 @@ unzip_data = BashOperator(
 # task to extrack Rowid, Timestamp, Anonymized Vehicle number, Vehicle type from vehicle-data.csv and save to csv_data.csv
 extract_data_from_csv = BashOperator(
     task_id='extract_data_from_csv',
-    bash_command='cut -f1-4 -d"," vehicle-data.csv > csv_data.csv',
+    bash_command='cut -d"," -f1-4 vehicle-data.csv > csv_data.csv',
     dag=dag,
 )
 
@@ -84,7 +84,8 @@ consolidate_data = BashOperator(
 # task to transform extracted_data.csv into capital letters and save to transformed_data.csv in staging directory
 transform_data = BashOperator(
     task_id='transform_data',
-    bash_command='tr "[a-z]" "[A-Z]" < extracted_data.csv > transformed_data.csv',
+    bash_command='cut -d',' -f 4 extracted_data.csv | \
+        tr "[a-z]" "[A-Z]" > transformed_data.csv',
     dag=dag,
 )
 
@@ -93,9 +94,9 @@ unzip_data >> extract_data_from_csv >> extract_data_from_tsv >> extract_data_fro
 
 ## Save DAG to ETL_toll_data.py
 ## Submit the DAG
-# $ cd /home/project/airflow
-# $ sudo cp ETL_toll_data.py $AIRFLOW_HOME/dags/
+# $ cp ./ETL_toll_data.py /home/project/airflow/dags
+# $ airflow dags list
 ## Unpause DAG
-# $ airflow dags unpause ETL_toll_data.py
+# $ airflow dags unpause ETL_toll_data
 ## Monitor the DAG
-# -
+# Airflow Console Audit log
