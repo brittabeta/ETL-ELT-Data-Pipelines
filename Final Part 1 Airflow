@@ -12,9 +12,11 @@
 # source: https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/tolldata.tgz 
 # $ cd /home/project/airflow/dags/finalassignment
 # $ sudo wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/tolldata.tgz 
+# $ tar -xzf /home/project/airflow/dags/finalassignment/tolldata.tgz
 # Change to the staging directory
 # $ cd /home/project/airflow/dags/finalassignment/staging
 # Create DAG in file ETL_toll_data.py
+
 
 # import the libraries
 from airflow import DAG 
