@@ -74,14 +74,24 @@ extract_data_from_fixed_width = BashOperator(
 # task to create a single csv extracted_data.csv by combining csv_data.csv tsv_data.tsv fixed_width_data.csv
 consolidate_data = BashOperator(
     task_id='consolidate_data',
-    bash_command='paste -d',' csv_data.csv tsv_data.csv > extracted_data.csv | paste -d',' extracted_data.csv fixed_width_data.csv > extracted_data.csv',
+    bash_command='paste -d',' csv_data.csv tsv_data.csv fixed_width_data.csv > extracted_data.csv',
     dag=dag,
 )
 
-task6 = BashOperator(
+# task to transform vehicle_type in extracted_data.csv into capital letters and save to transformed_data.csv in staging directory
+transform_data = BashOperator(
     task_id='transform_data',
     bash_command='awk '$5 = toupper($5)' < extracted_data.csv > transformed_data.csv',
     dag=dag,
 )
-# Task Pipeline
-task1 >> task2 >> task3 >> task4 >> task5 >> task6
+
+# Task Pipeline to sequentially execute tasks
+unzip_data >> extract_data_from_csv >> extract_data_from_tsv >> extract_data_from_fixed_width >> consolidate_data >> transform_data
+
+## Save DAG to ETL_toll_data.py
+## Submit the DAG
+# $ cp ETL_toll_data.py /home/project/airflow/dags/finalassignment
+## Unpause DAG
+# $ airflow dags unpause ETL_toll_data
+## Monitor the DAG
+# -
