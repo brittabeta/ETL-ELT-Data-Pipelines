@@ -1,0 +1,87 @@
+#### Scenario: 
+# You are a data engineer at a data analytics consulting company. You have been assigned to a project that aims to de-congest the 
+# national highways by analyzing the road traffic data from different toll plazas. Each highway is operated by a different toll 
+# operator with a different IT setup that uses different file formats. Your job is to collect data available in different formats and consolidate 
+# it into a single file.
+
+#### Prepare environment
+# Open Apache Airflow in IDE
+# Create a directory structure for staging area /home/project/airflow/dags/finalassignment/staging
+# $ sudo mkdir -p /home/project/airflow/dags/finalassignment/staging
+# Download dataset from source to destination /home/project/airflow/dags/finalassignment
+# source: https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/tolldata.tgz 
+# $ cd /home/project/airflow/dags/finalassignment
+# $ sudo wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/tolldata.tgz 
+# Change to the staging directory
+# $ cd /home/project/airflow/dags/finalassignment/staging
+# Create DAG in file ETL_toll_data.py
+
+# import the libraries
+from airflow import DAG 
+from airflow.operators.bash_operator import BashOperator
+from datetime import timedelta
+from airflow.utils.dates import days_ago
+
+# define DAG arguments
+default_args = {
+    'owner': 'brittabeta',
+    'start_date': days_ago(0), 
+    'email': ['brittabeta@dummy.com'],
+    'email_on_failure': True,
+    'email_on_retry': True,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+
+# DAG definition (instantiation)
+ETL_toll_data = DAG ('ETL_toll_data',
+    description='Apache Airflow Final Assignment',
+    default_args=default_args,
+    schedule_interval=timedelta(days=1), # every day
+)
+
+# Task definitions
+
+# task to unzip/uncompress data in tolldata.tgz at /home/project/airflow/dags/finalassignment into destination directory /home/project/airflow/dags/finalassignment
+unzip_data = BashOperator(
+    task_id='unzip_data',
+    bash_command='tar -xzf /home/project/airflow/dags/finalassignment/tolldata.tgz',
+    dag=dag,
+)
+
+# task to extrack Rowid, Timestamp, Anonymized Vehicle number, Vehicle type from vehicle-data.csv and save to csv_data.csv
+extract_data_from_csv = BashOperator(
+    task_id='extract_data_from_csv',
+    bash_command='cut -f1-4 -d"," vehicle-data.csv > csv_data.csv',
+    dag=dag,
+)
+
+# task to extract Number of axles, Tollplaza id, Tollplaza code from the tollplaza-data.tsv file and save to tsv_data.csv
+extract_data_from_tsv = BashOperator(
+    task_id='extract_data_from_tsv',
+    bash_command='cut -d$'\t' -f5-7 tollplaza-data.tsv | tr "\t" "," > tsv_data.csv',
+    dag=dag,
+)
+
+# task to extract Type of Payment code, Vehicle Code from fixed width payment-data.txt and save to fixed_width_data.csv
+extract_data_from_fixed_width = BashOperator(
+    task_id='extract_data_from_fixed_width',
+    bash_command='cut -c59-68 payment-data.txt | tr " " "," > fixed_width_data.csv',
+    dag=dag,
+)
+
+# task to create a single csv extracted_data.csv by combining csv_data.csv tsv_data.tsv fixed_width_data.csv
+consolidate_data = BashOperator(
+    task_id='consolidate_data',
+    bash_command='paste -d',' csv_data.csv tsv_data.csv > extracted_data.csv | paste -d',' extracted_data.csv fixed_width_data.csv > extracted_data.csv',
+    dag=dag,
+)
+
+task6 = BashOperator(
+    task_id='transform_data',
+    bash_command='awk '$5 = toupper($5)' < extracted_data.csv > transformed_data.csv',
+    dag=dag,
+)
+# Task Pipeline
+task1 >> task2 >> task3 >> task4 >> task5 >> task6
