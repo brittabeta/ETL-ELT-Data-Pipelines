@@ -10,39 +10,49 @@
 # into a MySQL database table. Verify that streamed data is being collected in the database table.
 
 ### Prepare the environment
+
 # download Kafka: $ wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz
 # extract Kafka: $ tar -xzf kafka_2.12-2.8.0.tgz
+
 # start MySQL server: $ start_mysql
-## password = 
-# $ connect to mysql: mysql --host=127.0.0.1 --port=3306 --user=root --password=Mjk0NDQtcnNhbm5h
+## MySQL database started, waiting for all services to be ready....
+## Your MySQL database is now ready to use and available with username: root password: MTI3NDUtYnJldGFu
+## You can access your MySQL database via:
+### The browser at: https://bretana1226-8080.theiadocker-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai
+### CommandLine: mysql --host=127.0.0.1 --port=3306 --user=root --password=MTI3NDUtYnJldGFu
+# $ mysql --host=127.0.0.1 --port=3306 --user=root --password=MTI3NDUtYnJldGFu
+
 # create a database tolldata
 # mysql> create database tolldata;
+
 # create a table livetolldata to store streamed data generated, each row = a record of a vehicle passing through a toll plaza
-use tolldata;
+# mysql > use tolldata;
 create table livetolldata(timestamp datetime,vehicle_id int,vehicle_type char(15),toll_plaza_id smallint);
+
 # disconnect from MySQL server
-exit
+# sql> exit
+
 # install kafka-python module to communicate with the kafka server
 # $ python3 -m pip install kafka-python
+
 # install python module mysql-connector-python to communicate with mysql server
 # $ python3 -m pip install mysql-connector-python==8.0.31
 
 # Start Kafka
 
 # Task 2.1 - Start Zookeeper
-# $
-cd kafka_2.12-2.8.0
+# $ cd kafka_2.12-2.8.0
 bin/zookeeper-server-start.sh config/zookeeper.properties
 
 # Task 2.2 - Start Kafka server
-# $
-cd kafka_2.12-2.8.0
+# new terminal
+# $ cd kafka_2.12-2.8.0
 bin/kafka-server-start.sh config/server.properties
 
 # Task 2.3 - Create a topic named toll
-# $
-cd kafka_2.12-2.8.0
-bin/kafka-topics.sh --create --topic news --bootstrap-server localhost:9092
+# new terminal
+# $ cd kafka_2.12-2.8.0
+bin/kafka-topics.sh --create --topic toll --bootstrap-server localhost:9092
 
 # Task 2.4 - Download the Toll Traffic Simulator
 # $ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/toll_traffic_generator.py
@@ -50,31 +60,121 @@ bin/kafka-topics.sh --create --topic news --bootstrap-server localhost:9092
 
 # Task 2.5 - Configure the Toll Traffic Simulator
 # set the topic to toll
-# $
-start consumer
-cd kafka_2.12-2.8.0
-bin/kafka-console-consumer.sh --topic news --from-beginning --bootstrap-server localhost:9092
+"""
+Top Traffic Simulator
+"""
+from time import sleep, time, ctime
+from random import random, randint, choice
+from kafka import KafkaProducer
+producer = KafkaProducer(bootstrap_servers='localhost:9092')
+
+TOPIC = 'toll'
+
+VEHICLE_TYPES = ("car", "car", "car", "car", "car", "car", "car", "car",
+                 "car", "car", "car", "truck", "truck", "truck",
+                 "truck", "van", "van")
+for _ in range(100000):
+    vehicle_id = randint(10000, 10000000)
+    vehicle_type = choice(VEHICLE_TYPES)
+    now = ctime(time())
+    plaza_id = randint(4000, 4010)
+    message = f"{now},{vehicle_id},{vehicle_type},{plaza_id}"
+    message = bytearray(message.encode("utf-8"))
+    print(f"A {vehicle_type} has passed by the toll plaza {plaza_id} at {now}.")
+    producer.send(TOPIC, message)
+    sleep(random() * 2)
+# save 
 
 # Task 2.6 - Run the Toll Traffic Simulator
 # run toll_traffic_generator.py
-# $
-*Hint : python3 <pythonfilename> runs a python program on the theia lab.
+# $ python3 toll_traffic_generator.py
+# output:
+## A car has passed by the toll plaza 4006 at Wed Apr 19 16:16:08 2023.
+## A car has passed by the toll plaza 4002 at Wed Apr 19 16:16:10 2023.
+## A truck has passed by the toll plaza 4002 at Wed Apr 19 16:16:11 2023.
+## A car has passed by the toll plaza 4004 at Wed Apr 19 16:16:11 2023.
+## A car has passed by the toll plaza 4006 at Wed Apr 19 16:16:11 2023.
 
 # Task 2.7 - Configure streaming_data_reader.py
 # download streaming_data_reader.py
+# new terminal
 # $ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/streaming_data_reader.py
 # open streaming_data_reader.py
 # modify: TOPIC DATABASE USERNAME PASSWORD
-# 
-create a consumer
-cd kafka_2.12-2.8.0
-bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --from-beginning
+"""
+Streaming data consumer
+"""
+from datetime import datetime
+from kafka import KafkaConsumer
+import mysql.connector
+
+TOPIC='toll'
+DATABASE = 'tolldata'
+USERNAME = 'root'
+PASSWORD = 'MTI3NDUtYnJldGFu'
+
+print("Connecting to the database")
+try:
+    connection = mysql.connector.connect(host='localhost', database=DATABASE, user=USERNAME, password=PASSWORD)
+except Exception:
+    print("Could not connect to database. Please check credentials")
+else:
+    print("Connected to database")
+cursor = connection.cursor()
+
+print("Connecting to Kafka")
+consumer = KafkaConsumer(TOPIC)
+print("Connected to Kafka")
+print(f"Reading messages from the topic {TOPIC}")
+for msg in consumer:
+
+    # Extract information from kafka
+
+    message = msg.value.decode("utf-8")
+
+    # Transform the date format to suit the database schema
+    (timestamp, vehcile_id, vehicle_type, plaza_id) = message.split(",")
+
+    dateobj = datetime.strptime(timestamp, '%a %b %d %H:%M:%S %Y')
+    timestamp = dateobj.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Loading data into the database table
+
+    sql = "insert into livetolldata values(%s,%s,%s,%s)"
+    result = cursor.execute(sql, (timestamp, vehcile_id, vehicle_type, plaza_id))
+    print(f"A {vehicle_type} was inserted into the database")
+    connection.commit()
+connection.close()
 
 # Task 2.8 - Run streaming_data_reader.py
 # $ python3 streaming_data_reader.py
-# output: -
+# output: 
+## Reading messages from the topic toll
+## A car was inserted into the database
+## A truck was inserted into the database
+## A car was inserted into the database
+## A car was inserted into the database
+## A car was inserted into the database
+## A car was inserted into the database
+## A car was inserted into the database...
 
 # Task 2.9 - Health check of the streaming data pipeline
 # list the top 10 rows in the table livetolldata where streaming toll data is stored
-# $ head livetolldata
-# output: -
+# reconnect
+# $ mysql --host=127.0.0.1 --port=3306 --user=root --password=MTI3NDUtYnJldGFu
+# mysql> SELECT * FROM tolldata.livetolldata LIMIT 10;
+# output:
++---------------------+------------+--------------+---------------+
+| timestamp           | vehicle_id | vehicle_type | toll_plaza_id |
++---------------------+------------+--------------+---------------+
+| 2023-04-19 16:22:53 |    4098571 | car          |          4008 |
+| 2023-04-19 16:22:54 |    3537739 | truck        |          4007 |
+| 2023-04-19 16:22:55 |    9724284 | car          |          4005 |
+| 2023-04-19 16:22:55 |    5307225 | car          |          4002 |
+| 2023-04-19 16:22:55 |    1096233 | car          |          4008 |
+| 2023-04-19 16:22:57 |    2925913 | car          |          4000 |
+| 2023-04-19 16:22:59 |    8914529 | car          |          4002 |
+| 2023-04-19 16:23:00 |    7849247 | van          |          4005 |
+| 2023-04-19 16:23:01 |    4702309 | car          |          4003 |
+| 2023-04-19 16:23:01 |    1590871 | car          |          4001 |
++---------------------+------------+--------------+---------------+
