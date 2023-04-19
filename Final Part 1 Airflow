@@ -12,6 +12,7 @@
 # source: https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/tolldata.tgz 
 # $ cd /home/project/airflow/dags/finalassignment
 # $ sudo wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/tolldata.tgz 
+# $ cs /home/project
 # $ tar -xzf /home/project/airflow/dags/finalassignment/tolldata.tgz
 # Change to the staging directory
 # $ cd /home/project/airflow/dags/finalassignment/staging
@@ -62,7 +63,7 @@ extract_data_from_csv = BashOperator(
 # task to extract Number of axles, Tollplaza id, Tollplaza code from the tollplaza-data.tsv file and save to tsv_data.csv
 extract_data_from_tsv = BashOperator(
     task_id='extract_data_from_tsv',
-    bash_command='cut -d$'\t' -f5-7 tollplaza-data.tsv | tr "\t" "," > tsv_data.csv',
+    bash_command='cut -f5-7 tollplaza-data.tsv | tr "\t" "," > tsv_data.csv',
     dag=dag,
 )
 
@@ -83,7 +84,7 @@ consolidate_data = BashOperator(
 # task to transform vehicle_type in extracted_data.csv into capital letters and save to transformed_data.csv in staging directory
 transform_data = BashOperator(
     task_id='transform_data',
-    bash_command='awk '$5 = toupper($5)' < extracted_data.csv > transformed_data.csv',
+    bash_command='tr "[a-z]" "[A-Z]" < extracted_data.csv > transformed_data.csv',
     dag=dag,
 )
 
@@ -92,8 +93,9 @@ unzip_data >> extract_data_from_csv >> extract_data_from_tsv >> extract_data_fro
 
 ## Save DAG to ETL_toll_data.py
 ## Submit the DAG
-# $ cp ETL_toll_data.py /home/project/airflow/dags/finalassignment
+# $ cd /home/project/airflow
+# $ sudo cp ETL_toll_data.py $AIRFLOW_HOME/dags/
 ## Unpause DAG
-# $ airflow dags unpause ETL_toll_data
+# $ airflow dags unpause ETL_toll_data.py
 ## Monitor the DAG
 # -
