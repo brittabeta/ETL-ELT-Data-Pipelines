@@ -31,12 +31,18 @@ exit
 
 # Task 2.1 - Start Zookeeper
 # $
+cd kafka_2.12-2.8.0
+bin/zookeeper-server-start.sh config/zookeeper.properties
 
 # Task 2.2 - Start Kafka server
 # $
+cd kafka_2.12-2.8.0
+bin/kafka-server-start.sh config/server.properties
 
 # Task 2.3 - Create a topic named toll
 # $
+cd kafka_2.12-2.8.0
+bin/kafka-topics.sh --create --topic news --bootstrap-server localhost:9092
 
 # Task 2.4 - Download the Toll Traffic Simulator
 # $ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/toll_traffic_generator.py
@@ -45,6 +51,9 @@ exit
 # Task 2.5 - Configure the Toll Traffic Simulator
 # set the topic to toll
 # $
+start consumer
+cd kafka_2.12-2.8.0
+bin/kafka-console-consumer.sh --topic news --from-beginning --bootstrap-server localhost:9092
 
 # Task 2.6 - Run the Toll Traffic Simulator
 # run toll_traffic_generator.py
@@ -57,13 +66,15 @@ exit
 # open streaming_data_reader.py
 # modify: TOPIC DATABASE USERNAME PASSWORD
 # 
+create a consumer
+cd kafka_2.12-2.8.0
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic bankbranch --from-beginning
 
 # Task 2.8 - Run streaming_data_reader.py
-# $ 
-# output: -
 # $ python3 streaming_data_reader.py
+# output: -
 
 # Task 2.9 - Health check of the streaming data pipeline
 # list the top 10 rows in the table livetolldata where streaming toll data is stored
-# $
+# $ head livetolldata
 # output: -
