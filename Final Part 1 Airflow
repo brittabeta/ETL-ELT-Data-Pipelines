@@ -81,7 +81,7 @@ consolidate_data = BashOperator(
     dag=dag,
 )
 
-# task to transform vehicle_type in extracted_data.csv into capital letters and save to transformed_data.csv in staging directory
+# task to transform extracted_data.csv into capital letters and save to transformed_data.csv in staging directory
 transform_data = BashOperator(
     task_id='transform_data',
     bash_command='tr "[a-z]" "[A-Z]" < extracted_data.csv > transformed_data.csv',
