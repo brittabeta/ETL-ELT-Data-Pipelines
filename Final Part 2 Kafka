@@ -1,0 +1,69 @@
+### Scenario
+# You are a data engineer at a data analytics consulting company. You have been assigned to a project that aims to de-congest the 
+# national highways by analyzing the road traffic data from different toll plazas. As a vehicle passes a toll plaza, the vehicle’s data like vehicle_id,
+# vehicle_type,toll_plaza_id and timestamp are streamed to Kafka. Your job is to create a data pipe line that collects the streaming data and loads it 
+# into a database.
+
+### Objectives: Start a MySQL Database server. Create a table to hold the toll data. Start the Kafka server. Install the Kafka python driver.
+# Install the MySQL python driver. Create a topic named toll in kafka. Download streaming data generator program.
+# Customize the generator program to steam to toll topic. Download and customise streaming data consumer. Customize the consumer program to write 
+# into a MySQL database table. Verify that streamed data is being collected in the database table.
+
+### Prepare the environment
+# download Kafka: $ wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz
+# extract Kafka: $ tar -xzf kafka_2.12-2.8.0.tgz
+# start MySQL server: $ start_mysql
+## password = 
+# $ connect to mysql: mysql --host=127.0.0.1 --port=3306 --user=root --password=Mjk0NDQtcnNhbm5h
+# create a database tolldata
+# mysql> create database tolldata;
+# create a table livetolldata to store streamed data generated, each row = a record of a vehicle passing through a toll plaza
+use tolldata;
+create table livetolldata(timestamp datetime,vehicle_id int,vehicle_type char(15),toll_plaza_id smallint);
+# disconnect from MySQL server
+exit
+# install kafka-python module to communicate with the kafka server
+# $ python3 -m pip install kafka-python
+# install python module mysql-connector-python to communicate with mysql server
+# $ python3 -m pip install mysql-connector-python==8.0.31
+
+# Start Kafka
+
+# Task 2.1 - Start Zookeeper
+# $
+
+# Task 2.2 - Start Kafka server
+# $
+
+# Task 2.3 - Create a topic named toll
+# $
+
+# Task 2.4 - Download the Toll Traffic Simulator
+# $ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/toll_traffic_generator.py
+# open toll_traffic_generator.py
+
+# Task 2.5 - Configure the Toll Traffic Simulator
+# set the topic to toll
+# $
+
+# Task 2.6 - Run the Toll Traffic Simulator
+# run toll_traffic_generator.py
+# $
+*Hint : python3 <pythonfilename> runs a python program on the theia lab.
+
+# Task 2.7 - Configure streaming_data_reader.py
+# download streaming_data_reader.py
+# $ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBM-DB0250EN-SkillsNetwork/labs/Final%20Assignment/streaming_data_reader.py
+# open streaming_data_reader.py
+# modify: TOPIC DATABASE USERNAME PASSWORD
+# 
+
+# Task 2.8 - Run streaming_data_reader.py
+# $ 
+# output: -
+# $ python3 streaming_data_reader.py
+
+# Task 2.9 - Health check of the streaming data pipeline
+# list the top 10 rows in the table livetolldata where streaming toll data is stored
+# $
+# output: -
